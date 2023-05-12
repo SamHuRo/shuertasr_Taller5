@@ -9,5 +9,4 @@
 #define INC_GPIOXDRIVER_H_
 
 
-
 #endif /* INC_GPIOXDRIVER_H_ */
