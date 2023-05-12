@@ -5,8 +5,8 @@
  *      Author: samuel
  */
 
-#ifndef USERTXDRIVER_H_
-#define USERTXDRIVER_H_
+#ifndef USARTXDRIVER_H_
+#define USARTXDRIVER_H_
 
 #define USART_MODE_TX		0
 #define USART_MODE_RX		1
@@ -86,4 +86,4 @@ void usart6Rx_Callback(void);
 
 
 
-#endif /* USERTXDRIVER_H_ */
+#endif /* USARTXDRIVER_H_ */
