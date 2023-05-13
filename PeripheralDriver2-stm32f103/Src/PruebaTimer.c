@@ -40,7 +40,7 @@ int main(void)
 	initSystem();
     while(1){
 		//Ciclo for para crear el delay de 1 segundo
-		for(uint32_t i = 0; i <= 160000; i ++){
+		for(uint32_t i = 0; i <= 1600000; i ++){
 		}
 
 		if(GPIOReadPin(&handlerPinEntrada) == 1){
