@@ -122,6 +122,8 @@ void GPIO_Config(GPIO_Handler_t *pGPIOHandler){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF1_1;
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLUP){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF1_1;
+			}else{
+				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF1_1;
 			}
 		}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_OUT){
 			//Se va a escoger cual es la velocidad de salida del pin
@@ -172,6 +174,8 @@ void GPIO_Config(GPIO_Handler_t *pGPIOHandler){
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLDOWN){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF2_1;
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLUP){
+				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF2_1;
+			}else{
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF2_1;
 			}
 		}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_OUT){
@@ -224,6 +228,8 @@ void GPIO_Config(GPIO_Handler_t *pGPIOHandler){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF3_1;
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLUP){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF3_1;
+			}else{
+				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF3_1;
 			}
 		}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_OUT){
 			//Se va a escoger cual es la velocidad de salida del pin
@@ -274,6 +280,8 @@ void GPIO_Config(GPIO_Handler_t *pGPIOHandler){
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLDOWN){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF4_1;
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLUP){
+				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF4_1;
+			}else{
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF4_1;
 			}
 		}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_OUT){
@@ -326,6 +334,8 @@ void GPIO_Config(GPIO_Handler_t *pGPIOHandler){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF5_1;
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLUP){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF5_1;
+			}else{
+				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF5_1;
 			}
 		}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_OUT){
 			//Se va a escoger cual es la velocidad de salida del pin
@@ -376,6 +386,8 @@ void GPIO_Config(GPIO_Handler_t *pGPIOHandler){
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLDOWN){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF6_1;
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLUP){
+				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF6_1;
+			}else{
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF6_1;
 			}
 		}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_OUT){
@@ -428,6 +440,8 @@ void GPIO_Config(GPIO_Handler_t *pGPIOHandler){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF7_1;
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLUP){
 				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF7_1;
+			}else{
+				pGPIOHandler->pGPIOx->CRL |= GPIO_CRL_CNF7_1;
 			}
 		}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_OUT){
 			//Se va a escoger cual es la velocidad de salida del pin
@@ -478,6 +492,8 @@ void GPIO_Config(GPIO_Handler_t *pGPIOHandler){
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLDOWN){
 				pGPIOHandler->pGPIOx->CRH |= GPIO_CRH_CNF8_1;
 			}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinPuPdControl == GPIO_PUPDR_PULLUP){
+				pGPIOHandler->pGPIOx->CRH |= GPIO_CRH_CNF8_1;
+			}else{
 				pGPIOHandler->pGPIOx->CRH |= GPIO_CRH_CNF8_1;
 			}
 		}else if(pGPIOHandler->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_OUT){

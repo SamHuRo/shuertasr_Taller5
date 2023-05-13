@@ -31,7 +31,8 @@ GPIO_Handler_t BlinkyPin = {0};      //BlinkyPin (pin de estado)
 /* #----Definicion del Timer----# */
 BasicTimer_Handler_t handlerTimerBlinkyPin = {0};  //Definicion del handler para el timer del blinkypin o pin de estado
 
-
+/*Pin de entrada*/
+GPIO_Handler_t handlerPinEntrada = {0};
 
 int main(void)
 {
@@ -42,9 +43,16 @@ int main(void)
 		for(uint32_t i = 0; i <= 160000; i ++){
 		}
 
-		contador += 1; //se pone el contador a incrementar de 1 si el boton no está precionado
+		if(GPIOReadPin(&handlerPinEntrada) == 1){
+			contador += 1; //se pone el contador a incrementar de 1 si el boton no está precionado
+		}else if(GPIOReadPin(&handlerPinEntrada) == 0){
+			contador -= 1;
+		}
+
 		if(contador == 61){
 			contador = 1; //el reinicio del contador cuando llegue a 60
+		}else if(contador == 0){
+			contador = 60;
 		}
 		//Mover el bit del contador a su pin correspondinete
 		valor1 = (contador);
@@ -116,6 +124,12 @@ void initSystem(void){
 
 	//Cargar la configuracion del Timer
 	BasicTimer_Config(&handlerTimerBlinkyPin);
+
+	/*Configuracion del pin de entrada*/
+	handlerPinEntrada.pGPIOx							= GPIOB;
+	handlerPinEntrada.GPIO_PinConfig.GPIO_PinNumber		= PIN_12;
+	handlerPinEntrada.GPIO_PinConfig.GPIO_PinMode		= GPIO_MODE_IN;
+	handlerPinEntrada.GPIO_PinConfig.GPIO_PinOPType 	= GPIO_OTYPER_PUSHPULL;
 }
 
 void BasicTimer2_Callback(void){
