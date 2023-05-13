@@ -17,7 +17,7 @@ uint8_t auxRxData = 0;
  */
 void USART_Config(USART_Handler_t *ptrUsartHandler){
 	/* 1. Activamos la señal de reloj que viene desde el BUS al que pertenece el periferico */
-	/* Lo debemos hacer para cada uno de las pisbles opciones que tengamos (USART1, USART2, USART6) */
+	/* Lo debemos hacer para cada uno de las pisbles opciones que tengamos (USART1, USART2, USART3) */
     /* 1.1 Configuramos el USART1 */
 	if(ptrUsartHandler->ptrUSARTx == USART1){
 		// Escriba acá su código
@@ -29,10 +29,10 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 	else if(ptrUsartHandler->ptrUSARTx == USART2){
 		RCC->APB1ENR |= RCC_APB1ENR_USART2EN; //Habilitar el reloj para el USART2
 	}
-    /* 1.3 Configuramos el USART6 */
+	/*Configuremos el USART3*/
     // Escriba acá su código
-	else{
-		RCC->APB2ENR |= RCC_APB2ENR_USART6EN; //Habilitar el reloj para el USART6
+	else if(ptrUsartHandler->ptrUSARTx == USART3){
+		RCC->APB1ENR |= RCC_APB1ENR_USART3EN; //Habilitar el reloj para el USART2
 	}
 
 	/* 2. Configuramos el tamaño del dato, la paridad y los bit de parada */
@@ -59,7 +59,7 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Es even, entonces cargamos la configuracion adecuada
 			// Escriba acá su código
 			//Ecribir en el registro de USART_CR1 en el bit 9 (PS) un 0
-			ptrUsartHandler->ptrUSARTx->CR1 |= (0b0 << 9);
+			ptrUsartHandler->ptrUSARTx->CR1 &= ~(USART_CR1_PS);
 
 
 		}else{
@@ -67,23 +67,23 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Escriba acá su código
 			//Ecribir en el registro de USART_CR1 en el bit 9 (PS) un 1
 			ptrUsartHandler->ptrUSARTx->CR1 &= ~(0b1 << 9);
-			ptrUsartHandler->ptrUSARTx->CR1 |= (0b1 << 9);
+			ptrUsartHandler->ptrUSARTx->CR1 |= (USART_CR1_PS);
 		}
 	}else{
 		// Si llegamos aca, es porque no deseamos tener el parity-check
 		// Escriba acá su código
 		//Escribir en el registro de USART_CR1 en el bit 10 (PCE) un 0 para desabiblitar el parity control enable
-		ptrUsartHandler->ptrUSARTx->CR1 &= ~(0b1 << 10); //Se deshabilitar el PCE, este se coloca en 0
+		ptrUsartHandler->ptrUSARTx->CR1 &= ~(USART_CR1_PCE); //Se deshabilitar el PCE, este se coloca en 0
 	}
 
 	// 2.3 Configuramos el tamaño del dato
     // Escriba acá su código
 	//Esta configuración se realiza en el USART_CR1 en el bit 12 (corresponde al bit M) 0: 8 bits de dato | 1: 9 bits de dato
 	if(ptrUsartHandler->USART_Config.USART_datasize == USART_DATASIZE_8BIT){
-		ptrUsartHandler->ptrUSARTx->CR1 &= ~(0b1 << 12); //Se coloca en 0 el bit M, para tener un tamaño de 8 bits
+		ptrUsartHandler->ptrUSARTx->CR1 &= ~(USART_CR1_M); //Se coloca en 0 el bit M, para tener un tamaño de 8 bits
 	}else{
-		ptrUsartHandler->ptrUSARTx->CR1 &= ~(0b1 << 12); //Limpiar el bit M del USART_CR1
-		ptrUsartHandler->ptrUSARTx->CR1 |= (0b1 << 12); //Se copia un 1 para tener un tamaño de 9 bits
+		ptrUsartHandler->ptrUSARTx->CR1 &= ~(USART_CR1_M); //Limpiar el bit M del USART_CR1
+		ptrUsartHandler->ptrUSARTx->CR1 |= (USART_CR1_M); //Se copia un 1 para tener un tamaño de 9 bits
 	}
 
 	// 2.4 Configuramos los stop bits (SFR USART_CR2)
@@ -91,34 +91,34 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 	case USART_STOPBIT_1: {
 		// Debemos cargar el valor 0b00 en los dos bits de STOP
 		// Escriba acá su código
-		ptrUsartHandler->ptrUSARTx->CR2 &= ~(0b11 << 12); //Limpiar el registro de STOP
+		ptrUsartHandler->ptrUSARTx->CR2 &= ~(USART_CR2_STOP); //Limpiar el registro de STOP
 		break;
 	}
 	case USART_STOPBIT_0_5: {
 		// Debemos cargar el valor 0b01 en los dos bits de STOP
 		// Escriba acá su código
-		ptrUsartHandler->ptrUSARTx->CR2 &= ~(0b11 << 12); //Limpiar el registro de STOP
-		ptrUsartHandler->ptrUSARTx->CR2 |= (0b01 << 12); //Escribo en el registro STOP 0b01 para configurarlo como 0.5 Stop bit
+		ptrUsartHandler->ptrUSARTx->CR2 &= ~(USART_CR2_STOP); //Limpiar el registro de STOP
+		ptrUsartHandler->ptrUSARTx->CR2 |= (USART_CR2_STOP_0); //Escribo en el registro STOP 0b01 para configurarlo como 0.5 Stop bit
 		break;
 	}
 	case USART_STOPBIT_2: {
 		// Debemos cargar el valor 0b10 en los dos bits de STOP
 		// Escriba acá su código
-		ptrUsartHandler->ptrUSARTx->CR2 &= ~(0b11 << 12); //Limpiar el registro de STOP
-		ptrUsartHandler->ptrUSARTx->CR2 |= (0b10 << 12); //Escribo en el registro STOP 0b10 para configurarlo como 2 Stop bits
+		ptrUsartHandler->ptrUSARTx->CR2 &= ~(USART_CR2_STOP); //Limpiar el registro de STOP
+		ptrUsartHandler->ptrUSARTx->CR2 |= (USART_CR2_STOP_1); //Escribo en el registro STOP 0b10 para configurarlo como 2 Stop bits
 		break;
 	}
 	case USART_STOPBIT_1_5: {
 		// Debemoscargar el valor 0b11 en los dos bits de STOP
 		// Escriba acá su código
-		ptrUsartHandler->ptrUSARTx->CR2 &= ~(0b11 << 12); //Limpiar el registro de STOP
-		ptrUsartHandler->ptrUSARTx->CR2 |= (0b11 << 12); //Escribo en el registro STOP 0b11 para configurarlo como 1.5 Stop bits
+		ptrUsartHandler->ptrUSARTx->CR2 &= ~(USART_CR2_STOP); //Limpiar el registro de STOP
+		ptrUsartHandler->ptrUSARTx->CR2 |= (USART_CR2_STOP); //Escribo en el registro STOP 0b11 para configurarlo como 1.5 Stop bits
 		break;
 	}
 	default: {
 		// En el casopor defecto seleccionamos 1 bit de parada
 		// Escriba acá su código
-		ptrUsartHandler->ptrUSARTx->CR2 &= ~(0b11 << 12); //Se escribe para que sea 1 Stop bit
+		ptrUsartHandler->ptrUSARTx->CR2 &= ~(USART_CR2_STOP); //Se escribe para que sea 1 Stop bit
 		break;
 	}
 	}
@@ -169,7 +169,8 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 	{
 		// Activamos ambas partes, tanto transmision como recepcion
 		// Escriba acá su código
-		ptrUsartHandler->ptrUSARTx->CR1 |= (0b11 << 2); //Se escribe un 1 en RE del CR1 y un 1 en el TE del CR1
+		ptrUsartHandler->ptrUSARTx->CR1 |= (USART_CR1_RE); //Se escribe un 1 en RE del CR1 y un 1 en el TE del CR1
+		ptrUsartHandler->ptrUSARTx->CR1 |= (USART_CR1_TE);
 		break;
 	}
 	case USART_MODE_DISABLE:
@@ -213,8 +214,8 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			__NVIC_EnableIRQ(USART1_IRQn);
 		}else if(ptrUsartHandler->ptrUSARTx == USART2){
 			__NVIC_EnableIRQ(USART2_IRQn);
-		}else if(ptrUsartHandler->ptrUSARTx == USART6){
-			__NVIC_EnableIRQ(USART6_IRQn);
+		}else if(ptrUsartHandler->ptrUSARTx == USART3){
+			__NVIC_EnableIRQ(USART3_IRQn);
 		}
 		/*Volvemos a activar las interrupciones globales*/
 		__enable_irq();
@@ -264,7 +265,7 @@ void USART2_IRQHandler(void){
 void USART6_IRQHandler(void){
 	//Evaluamos si la interrupcion que se dio es por RX
 	if(USART6->SR & USART_SR_RXNE){
-		auxRxData = (uint8_t) USART6->DR;
+		auxRxData = (uint8_t) USART3->DR;
 		usart6Rx_Callback();
 	}
 	//
