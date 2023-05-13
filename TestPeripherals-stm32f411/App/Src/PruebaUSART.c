@@ -201,7 +201,7 @@ void initSystem(void){
 	usart2Comm.USART_Config.USART_parity			= USART_PARITY_NONE;
 	usart2Comm.USART_Config.USART_stopbits			= USART_STOPBIT_1;
 	usart2Comm.USART_Config.USART_mode				= USART_MODE_RXTX;
-	usart2Comm.USART_Config.USART_enableIntRX		= USART_RX_INTERRUP_DISABLE;
+	usart2Comm.USART_Config.USART_enableIntRX		= USART_RX_INTERRUP_ENABLE;
 	usart2Comm.USART_Config.USART_enableIntTX		= USART_TX_INTERRUP_DISABLE;
 	//Cargar la configuracion del USART
 	USART_Config(&usart2Comm);
