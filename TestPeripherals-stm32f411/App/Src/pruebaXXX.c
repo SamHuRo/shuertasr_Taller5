@@ -22,6 +22,9 @@
 /*----Funcion para cargar iniciar el MCU----*/
 void initSystem(void);
 
+/*----Funcion para configurar el PLL----*/
+void PLLConfig(void);
+
 /*----Definicion de los handlers----*/
 GPIO_Handler_t BlinkyPin = {0};      //BlinkyPin (pin de estado)
 GPIO_Handler_t handlerUserBotton = {0};
@@ -35,6 +38,9 @@ int main(void){
 
 	//Inicializamos los elementos
 	initSystem();
+
+	//Configuracion del PLL
+	PLLConfig();
 
 	while(1){
 
@@ -66,6 +72,50 @@ void initSystem(void){
 	//Cargar la configuracion del Timer
 	BasicTimer_Config(&handlerTimerBlinkyPin);
 
+}
+
+/*Funcion para configurar el PLL en el MCU*/
+void PLLConfig(void){
+	//Habilitar el reloj HSE
+	RCC->CR &= ~RCC_CR_HSEON; //Limpiamos el registro
+	RCC->CR |= RCC_CR_HSEON;
+
+	//Esperamos hasta que el HSE este listo
+	while(!(RCC->CR & RCC_CR_HSERDY)){
+		__NOP();
+	}
+
+	//Activamos el reloj
+	RCC->AHB1ENR &= ~RCC_APB1ENR_PWREN; //Limpiamos el registro
+	RCC->AHB1ENR |= RCC_APB1ENR_PWREN;
+
+	//Configurar el reloj que se va a utilizar en el PLL
+	RCC->PLLCFGR &= ~RCC_PLLCFGR_PLLSRC; //Limpiamos el registro
+	RCC->PLLCFGR |= RCC_PLLCFGR_PLLSRC_HSE;
+
+	//Configurar el PLLM, PLLN, PLLP
+	//PLLM
+	RCC->PLLCFGR |= (16 << RCC_PLLCFGR_PLLM_Pos);
+	//PLLN
+	RCC->PLLCFGR |= (16 << RCC_PLLCFGR_PLLN_Pos);
+	//PLLP
+	RCC->PLLCFGR |= (16 << RCC_PLLCFGR_PLLP_Pos);
+
+	//Encender el PLL
+	RCC->CR |= RCC_CR_PLLON;
+
+	//Esperar haasta que el PLL este activo
+	while(!(RCC->CR & RCC_CR_PLLRDY)){
+		__NOP();
+	}
+
+	//Configurarr para que el pin utilice el PLL
+	RCC->CFGR |= RCC_CFGR_SWS_PLL;
+
+	//Esperar hasta que se active
+	while(!(RCC->CFGR & RCC_CFGR_SWS_PLL)){
+		__NOP();
+	}
 }
 /*Callback del timer2 -> Hace blinky al led*/
 void BasicTimer2_Callback(void){
