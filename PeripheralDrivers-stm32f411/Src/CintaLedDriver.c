@@ -13,7 +13,7 @@ void Uno(void){
 	__NOP();
 	__NOP();
 
-	GPIOA->ODR &= ~(1<<7);
+	GPIOA->ODR |= (1<<8);
 	__NOP();
 	__NOP();
 	__NOP();
@@ -53,7 +53,7 @@ void Uno(void){
 	__NOP();
 	__NOP();
 
-	GPIOA->ODR |= (1<<7);
+	GPIOA->ODR |= (0<<8);
 	__NOP();
 	__NOP();
 	__NOP();
@@ -98,11 +98,8 @@ void Uno(void){
 
 /*====Funcion para crear un cero en la cinta led====*/
 void Cero(void){
-		__NOP();
-		__NOP();
-		__NOP();
 
-		GPIOA->ODR &= ~(1<<7);
+		GPIOA->ODR |= (1<<8);
 		__NOP();
 		__NOP();
 		__NOP();
@@ -182,7 +179,7 @@ void Cero(void){
 		__NOP();
 		__NOP();
 
-		GPIOA->ODR &= ~(1<<7);
+		GPIOA->ODR |= (0<<8);
 		__NOP();
 		__NOP();
 		__NOP();
