@@ -13,13 +13,6 @@
 #include "BasicTimer.h"
 #include "ExtiDriver.h"
 
-
-uint32_t contador = 0;// Es la variable que guarda el numero
-uint8_t valor1 = 0;
-uint8_t valor2 = 0;
-uint8_t valor3 = 0;
-uint8_t valor4 = 0;
-
 /* #----Cabeceras de las de funciones----# */
 //Funcion para inicializar el sistema, se definen los pines, timer y las interrupciones
 void initSystem(void);
@@ -37,41 +30,34 @@ BasicTimer_Handler_t handlerTimerBlinkyPin = {0};  //Definicion del handler para
 /*Pin de entrada*/
 GPIO_Handler_t handlerPinEntrada = {0};
 
+/*====Definicion del modo default====*/
+BasicTimer_Handler_t handlerTimerModo = {0};
+
+/*====Definicion de los handler para el exti====*/
+//Encoder
+GPIO_Handler_t SW = {0};  //SW del Encoder
+GPIO_Handler_t DT = {0};  //DT del Encoder
+GPIO_Handler_t CLK = {0}; //CLK del Encoder
+/* #----Definicion de las interrupciones----# */
+EXTI_Config_t handlerEXTI_SW = {0}; 	//Interrupcion del SW
+EXTI_Config_t handlerEXTI_CLK = {0};	//Interrupcion del DT
+
+uint8_t parar = 0;
+
 int main(void)
 {
 	//Se inicia el MCU con las configuraciones de los pines
 	initSystem();
     while(1){
-		//Ciclo for para crear el delay de 1 segundo
-		for(uint32_t i = 0; i <= 1600000; i ++){
-		}
+    	if(parar == 1){
+    		GPIO_TooglePin(&handlerIzquierda);
+    		__NOP();
+    		__NOP();
+    		__NOP();
+    		__NOP();
+    		GPIO_TooglePin(&handlerIzquierda);
+    	}
 
-		if(GPIOReadPin(&handlerPinEntrada) == 1){
-			contador += 1; //se pone el contador a incrementar de 1 si el boton no está precionado
-		}else if(GPIOReadPin(&handlerPinEntrada) == 0){
-			contador -= 1;
-		}
-
-		if(contador == 61){
-			contador = 1; //el reinicio del contador cuando llegue a 60
-		}else if(contador == 0){
-			contador = 60;
-		}
-		//Mover el bit del contador a su pin correspondinete
-		valor1 = (contador);
-		valor2 = (contador >> 1);
-		valor3 = (contador >> 2);
-		valor4 = (contador >> 3);
-
-		valor1 &= (0b1);
-		valor2 &= (0b1);
-		valor3 &= (0b1);
-		valor4 &= (0b1);
-
-		GPIO_WritePin(&handlerLed1, valor1);
-		GPIO_WritePin(&handlerLed2, valor2);
-		GPIO_WritePin(&handlerLed3, valor3);
-		GPIO_WritePin(&handlerLed4, valor4);
     }
 }
 
@@ -79,7 +65,7 @@ int main(void)
 void initSystem(void){
 	handlerIzquierda.pGPIOx									= GPIOA;
 	handlerIzquierda.GPIO_PinConfig.GPIO_PinNumber			= PIN_8;
-	handlerIzquierda.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_OUT;
+	handlerIzquierda.GPIO_PinConfig.GPIO_PinMode			= GPIO_MODE_OUT;
 	handlerIzquierda.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
 	//Cargamos la configuracion de los pines
 	GPIO_Config(&handlerIzquierda);
@@ -96,7 +82,7 @@ void initSystem(void){
 	handlerDerecha.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_OUT;
 	handlerDerecha.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
 	//Cargamos la configuracion de los pines
-	GPIO_Config(&handlerDerecha                                                          );
+	GPIO_Config(&handlerDerecha);
 
 	/* ----Configuracion del Blinky Pin---- */
 	BlinkyPin.pGPIOx										= GPIOC;
@@ -126,8 +112,66 @@ void initSystem(void){
 	handlerPinEntrada.GPIO_PinConfig.GPIO_PinNumber		= PIN_12;
 	handlerPinEntrada.GPIO_PinConfig.GPIO_PinMode		= GPIO_MODE_IN;
 	handlerPinEntrada.GPIO_PinConfig.GPIO_PinOPType 	= GPIO_OTYPER_PUSHPULL;
+
+	/*Configuracion del timer del modo*/
+	//Seleccionamos el timer
+	handlerTimerModo.ptrTIMx							= TIM3;
+
+	//Configuracion del timer
+	handlerTimerModo.TIMx_Config.TIMx_mode				= BTIMER_MODE_UP;
+	handlerTimerModo.TIMx_Config.TIMx_period			= 50;
+	handlerTimerModo.TIMx_Config.TIMx_speed				= BTIMER_SPEED_1ms;
+	handlerTimerModo.TIMx_Config.TIMx_interruptEnable	= SET;
+	//Cargar la configuracion del Timer
+	BasicTimer_Config(&handlerTimerModo);
+
+	/* ----Configuracion del encoder---- */
+	/* Configuracion de los pines */
+	//Configuracion del SW - pin PA131
+	SW.pGPIOx 									= GPIOB;
+	SW.GPIO_PinConfig.GPIO_PinNumber			= PIN_3;
+	SW.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_IN;
+	SW.GPIO_PinConfig.GPIO_PinSpeed				= GPIO_OSPEED_10MHz;
+	SW.GPIO_PinConfig.GPIO_PinAltFunMode		= AF0;
+
+	//Configuracion del DT - pin PA14
+	DT.pGPIOx 									= GPIOB;
+	DT.GPIO_PinConfig.GPIO_PinNumber			= PIN_4;
+	DT.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_IN;
+	DT.GPIO_PinConfig.GPIO_PinOPType            = GPIO_OTYPER_PUSHPULL;
+	DT.GPIO_PinConfig.GPIO_PinSpeed				= GPIO_OSPEED_10MHz;
+	DT.GPIO_PinConfig.GPIO_PinAltFunMode		= AF0;
+	GPIO_Config(&DT);
+
+
+	//Configuracion del CLK - pin PA15
+	CLK.pGPIOx 									= GPIOB;
+	CLK.GPIO_PinConfig.GPIO_PinNumber			= PIN_5;
+	CLK.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_IN;
+	CLK.GPIO_PinConfig.GPIO_PinOPType           = GPIO_OTYPER_PUSHPULL;
+	CLK.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_10MHz;
+
+	//Interrupcion para cambiar de modo -> SW
+	handlerEXTI_SW.edgeType						= EXTERNAL_INTERRUPT_FALLING_EDGE;
+	handlerEXTI_SW.pGPIOHandler					= &SW;
+	//Cargar la configuracion
+	extInt_Config(&handlerEXTI_SW);
+
+	//Interrupcion para detectar el giro del encoder -> CLK
+	handlerEXTI_CLK.edgeType					= EXTERNAL_INTERRUPT_FALLING_EDGE;
+	handlerEXTI_CLK.pGPIOHandler				= &CLK;
+	//Cargar la configuracion
+	extInt_Config(&handlerEXTI_CLK);
 }
 
 void BasicTimer2_Callback(void){
 	GPIO_TooglePin(&BlinkyPin);
+}
+
+void BasicTimer3_Callback(void){
+	GPIO_TooglePin(&handlerStop);
+}
+
+void callback_extInt3(void){
+	parar ^= 1;
 }
