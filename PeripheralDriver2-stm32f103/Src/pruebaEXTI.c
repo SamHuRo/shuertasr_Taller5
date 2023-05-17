@@ -25,10 +25,9 @@ uint8_t valor4 = 0;
 void initSystem(void);
 
 /* #----Definicion de los handler para los pines----# */
-GPIO_Handler_t handlerLed1 = {0};
-GPIO_Handler_t handlerLed2 = {0};
-GPIO_Handler_t handlerLed3 = {0};
-GPIO_Handler_t handlerLed4 = {0};
+GPIO_Handler_t handlerIzquierda = {0};
+GPIO_Handler_t handlerStop = {0};
+GPIO_Handler_t handlerDerecha = {0};
 
 /* #----Definicion de los handler----# */
 GPIO_Handler_t BlinkyPin = {0};      //BlinkyPin (pin de estado)
@@ -78,33 +77,26 @@ int main(void)
 
 /* #----Definicion de la funcion initSystem----# */
 void initSystem(void){
-	handlerLed1.pGPIOx									= GPIOA;
-	handlerLed1.GPIO_PinConfig.GPIO_PinNumber			= PIN_8;
-	handlerLed1.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_OUT;
-	handlerLed1.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
+	handlerIzquierda.pGPIOx									= GPIOA;
+	handlerIzquierda.GPIO_PinConfig.GPIO_PinNumber			= PIN_8;
+	handlerIzquierda.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_OUT;
+	handlerIzquierda.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
 	//Cargamos la configuracion de los pines
-	GPIO_Config(&handlerLed1);
+	GPIO_Config(&handlerIzquierda);
 
-	handlerLed2.pGPIOx									= GPIOA;
-	handlerLed2.GPIO_PinConfig.GPIO_PinNumber			= PIN_9;
-	handlerLed2.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_OUT;
-	handlerLed2.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
+	handlerStop.pGPIOx									= GPIOA;
+	handlerStop.GPIO_PinConfig.GPIO_PinNumber			= PIN_9;
+	handlerStop.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_OUT;
+	handlerStop.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
 	//Cargamos la configuracion de los pines
-	GPIO_Config(&handlerLed2);
+	GPIO_Config(&handlerStop);
 
-	handlerLed3.pGPIOx									= GPIOA;
-	handlerLed3.GPIO_PinConfig.GPIO_PinNumber			= PIN_10;
-	handlerLed3.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_OUT;
-	handlerLed3.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
+	handlerDerecha.pGPIOx									= GPIOA;
+	handlerDerecha.GPIO_PinConfig.GPIO_PinNumber			= PIN_10;
+	handlerDerecha.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_OUT;
+	handlerDerecha.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
 	//Cargamos la configuracion de los pines
-	GPIO_Config(&handlerLed3);
-
-	handlerLed4.pGPIOx									= GPIOB;
-	handlerLed4.GPIO_PinConfig.GPIO_PinNumber			= PIN_1;
-	handlerLed4.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_OUT;
-	handlerLed4.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
-	//Cargamos la configuracion de los pines
-	GPIO_Config(&handlerLed4);
+	GPIO_Config(&handlerDerecha                                                          );
 
 	/* ----Configuracion del Blinky Pin---- */
 	BlinkyPin.pGPIOx										= GPIOC;
