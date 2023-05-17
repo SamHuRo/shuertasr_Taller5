@@ -28,11 +28,11 @@ void ConfigPLL(void){
 
 	FLASH->ACR &= ~(FLASH_ACR_LATENCY); //Limpiamos el registro
 	//3WS de latencia
-	FLASH->ACR |= (3 << FLASH_ACR_LATENCY_Pos);
+	FLASH->ACR |= FLASH_ACR_LATENCY_1WS;
+	FLASH->ACR |= FLASH_ACR_LATENCY_2WS;
 
 	//Seleccionamos el PLL
-	RCC->CFGR |= (RCC_CFGR_MCO1_0);
-	RCC->CFGR |= (RCC_CFGR_MCO1_1);
+	RCC->CFGR |= (RCC_CFGR_MCO1);
 
 	//Utilizamos el prescaler para poder ver la señal en el osciloscopio
 	RCC->CFGR |= (RCC_CFGR_MCO1PRE_0);

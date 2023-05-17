@@ -13,7 +13,7 @@ void Uno(void){
 	__NOP();
 	__NOP();
 
-	GPIOA->ODR &= ~(1<<6);
+	GPIOA->ODR &= ~(1<<7);
 	__NOP();
 	__NOP();
 	__NOP();
@@ -53,7 +53,7 @@ void Uno(void){
 	__NOP();
 	__NOP();
 
-	GPIOA->ODR |= (1<<6);
+	GPIOA->ODR |= (1<<7);
 	__NOP();
 	__NOP();
 	__NOP();
@@ -102,7 +102,7 @@ void Cero(void){
 		__NOP();
 		__NOP();
 
-		GPIOA->ODR &= ~(1<<6);
+		GPIOA->ODR &= ~(1<<7);
 		__NOP();
 		__NOP();
 		__NOP();
@@ -182,7 +182,7 @@ void Cero(void){
 		__NOP();
 		__NOP();
 
-		GPIOA->ODR &= ~(1<<6);
+		GPIOA->ODR &= ~(1<<7);
 		__NOP();
 		__NOP();
 		__NOP();
