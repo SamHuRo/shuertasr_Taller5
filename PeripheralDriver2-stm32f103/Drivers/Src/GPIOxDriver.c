@@ -4,9 +4,6 @@
  *  Created on: May 12, 2023
  *      Author: samuel
  */
-
-#ifndef SRC_GPIOXDRIVER_C_
-#define SRC_GPIOXDRIVER_C_
 #include <stm32f1xx.h>
 #include "GPIOxDriver.h"
 
@@ -936,6 +933,3 @@ void GPIO_TooglePin(GPIO_Handler_t *pPinHandler){
 	pPinHandler->pGPIOx->ODR ^= (0b1 << pPinHandler->GPIO_PinConfig.GPIO_PinNumber);
 
 }//Fin de la funcion GPIO_TooglePin
-
-
-#endif /* SRC_GPIOXDRIVER_C_ */

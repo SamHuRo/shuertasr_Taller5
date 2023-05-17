@@ -264,7 +264,7 @@ void USART2_IRQHandler(void){
 }
 void USART6_IRQHandler(void){
 	//Evaluamos si la interrupcion que se dio es por RX
-	if(USART6->SR & USART_SR_RXNE){
+	if(USART3->SR & USART_SR_RXNE){
 		auxRxData = (uint8_t) USART3->DR;
 		usart6Rx_Callback();
 	}
