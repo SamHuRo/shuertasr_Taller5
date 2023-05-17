@@ -5,7 +5,9 @@
  *      Author: samuel
  */
 #include <stdint.h>
+
 #include <stm32f1xx.h>
+
 #include "GPIOxDriver.h"
 #include "BasicTimer.h"
 
