@@ -12,7 +12,5 @@
 #include "GPIOxDriver.h"
 
 void ConfigPLL(void);
-void Uno(GPIO_Handler_t *pGPIOHandler);
-void Cero(GPIO_Handler_t *pGPIOHandler);
 
 #endif /* PLLDRIVER_H_ */
