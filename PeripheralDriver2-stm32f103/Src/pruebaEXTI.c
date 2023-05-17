@@ -16,6 +16,8 @@
 /* #----Cabeceras de las de funciones----# */
 //Funcion para inicializar el sistema, se definen los pines, timer y las interrupciones
 void initSystem(void);
+void funcionIzquierda(void);
+void funcionDerecha(void);
 
 /* #----Definicion de los handler para los pines----# */
 GPIO_Handler_t handlerIzquierda = {0};
@@ -26,9 +28,6 @@ GPIO_Handler_t handlerDerecha = {0};
 GPIO_Handler_t BlinkyPin = {0};      //BlinkyPin (pin de estado)
 /* #----Definicion del Timer----# */
 BasicTimer_Handler_t handlerTimerBlinkyPin = {0};  //Definicion del handler para el timer del blinkypin o pin de estado
-
-/*Pin de entrada*/
-GPIO_Handler_t handlerPinEntrada = {0};
 
 /*====Definicion del modo default====*/
 BasicTimer_Handler_t handlerTimerModo = {0};
@@ -49,15 +48,9 @@ int main(void)
 	//Se inicia el MCU con las configuraciones de los pines
 	initSystem();
     while(1){
-    	if(parar == 1){
-    		GPIO_TooglePin(&handlerIzquierda);
-    		__NOP();
-    		__NOP();
-    		__NOP();
-    		__NOP();
-    		GPIO_TooglePin(&handlerIzquierda);
+    	if(GPIOReadPin(&SW) == 1){
+    		funcionIzquierda();
     	}
-
     }
 }
 
@@ -107,12 +100,6 @@ void initSystem(void){
 	//Cargar la configuracion del Timer
 	BasicTimer_Config(&handlerTimerBlinkyPin);
 
-	/*Configuracion del pin de entrada*/
-	handlerPinEntrada.pGPIOx							= GPIOB;
-	handlerPinEntrada.GPIO_PinConfig.GPIO_PinNumber		= PIN_12;
-	handlerPinEntrada.GPIO_PinConfig.GPIO_PinMode		= GPIO_MODE_IN;
-	handlerPinEntrada.GPIO_PinConfig.GPIO_PinOPType 	= GPIO_OTYPER_PUSHPULL;
-
 	/*Configuracion del timer del modo*/
 	//Seleccionamos el timer
 	handlerTimerModo.ptrTIMx							= TIM3;
@@ -127,28 +114,26 @@ void initSystem(void){
 
 	/* ----Configuracion del encoder---- */
 	/* Configuracion de los pines */
-	//Configuracion del SW - pin PA131
+	//Configuracion del SW
 	SW.pGPIOx 									= GPIOB;
-	SW.GPIO_PinConfig.GPIO_PinNumber			= PIN_3;
+	SW.GPIO_PinConfig.GPIO_PinNumber			= PIN_12;
 	SW.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_IN;
-	SW.GPIO_PinConfig.GPIO_PinSpeed				= GPIO_OSPEED_10MHz;
-	SW.GPIO_PinConfig.GPIO_PinAltFunMode		= AF0;
+	SW.GPIO_PinConfig.GPIO_PinOPType 			= GPIO_OTYPER_PUSHPULL;
+	SW.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_PULLDOWN;
 
-	//Configuracion del DT - pin PA14
+	//Configuracion del DT
 	DT.pGPIOx 									= GPIOB;
-	DT.GPIO_PinConfig.GPIO_PinNumber			= PIN_4;
+	DT.GPIO_PinConfig.GPIO_PinNumber			= PIN_13;
 	DT.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_IN;
-	DT.GPIO_PinConfig.GPIO_PinOPType            = GPIO_OTYPER_PUSHPULL;
 	DT.GPIO_PinConfig.GPIO_PinSpeed				= GPIO_OSPEED_10MHz;
 	DT.GPIO_PinConfig.GPIO_PinAltFunMode		= AF0;
 	GPIO_Config(&DT);
 
 
-	//Configuracion del CLK - pin PA15
+	//Configuracion del CLK
 	CLK.pGPIOx 									= GPIOB;
-	CLK.GPIO_PinConfig.GPIO_PinNumber			= PIN_5;
+	CLK.GPIO_PinConfig.GPIO_PinNumber			= PIN_14;
 	CLK.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_IN;
-	CLK.GPIO_PinConfig.GPIO_PinOPType           = GPIO_OTYPER_PUSHPULL;
 	CLK.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_10MHz;
 
 	//Interrupcion para cambiar de modo -> SW
@@ -172,6 +157,42 @@ void BasicTimer3_Callback(void){
 	GPIO_TooglePin(&handlerStop);
 }
 
-void callback_extInt3(void){
-	parar ^= 1;
+void callback_extInt12(void){
+	parar = 1;
 }
+
+void funcionIzquierda(void){
+	for(uint32_t i = 0; i < 1600000; i++){
+		__NOP();
+	}
+	GPIO_TooglePin(&handlerIzquierda);
+	for(uint32_t i = 0; i < 16000; i++){
+		__NOP();
+	}
+	GPIO_TooglePin(&handlerIzquierda);
+	for(uint32_t i = 0; i < 1600000; i++){
+		__NOP();
+	}
+	GPIO_TooglePin(&handlerIzquierda);
+	for(uint32_t i = 0; i < 16000; i++){
+		__NOP();
+	}
+	GPIO_TooglePin(&handlerIzquierda);
+	for(uint32_t i = 0; i < 1600000; i++){
+		__NOP();
+	}
+	GPIO_TooglePin(&handlerIzquierda);
+	for(uint32_t i = 0; i < 16000; i++){
+		__NOP();
+	}
+	GPIO_TooglePin(&handlerIzquierda);
+	for(uint32_t i = 0; i < 1600000; i++){
+		__NOP();
+	}
+	GPIO_TooglePin(&handlerIzquierda);
+	for(uint32_t i = 0; i < 16000; i++){
+		__NOP();
+	}
+	GPIO_TooglePin(&handlerIzquierda);
+}
+
