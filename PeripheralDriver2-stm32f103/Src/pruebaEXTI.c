@@ -48,7 +48,7 @@ int main(void)
 	//Se inicia el MCU con las configuraciones de los pines
 	initSystem();
     while(1){
-    	if(GPIOReadPin(&SW) == 1){
+    	if(parar == 1){
     		funcionIzquierda();
     	}
     }
@@ -106,7 +106,7 @@ void initSystem(void){
 
 	//Configuracion del timer
 	handlerTimerModo.TIMx_Config.TIMx_mode				= BTIMER_MODE_UP;
-	handlerTimerModo.TIMx_Config.TIMx_period			= 50;
+	handlerTimerModo.TIMx_Config.TIMx_period			= 500;
 	handlerTimerModo.TIMx_Config.TIMx_speed				= BTIMER_SPEED_1ms;
 	handlerTimerModo.TIMx_Config.TIMx_interruptEnable	= SET;
 	//Cargar la configuracion del Timer
