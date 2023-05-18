@@ -14,12 +14,12 @@
 #include "PLLDriver.h"
 
 /*Funciones para escribir uno o cero en la cinta led*/
-void Uno(void);
-void Cero(void);
+void Uno(GPIO_Handler_t *pGPIOHandler);
+void Cero(GPIO_Handler_t *pGPIOHandler);
 
 /*Funciones para escribir los colores en la cinta led*/
-void Verde(void);
-void Rojo(void);
-void Azul(void);
+void Verde(GPIO_Handler_t *pGPIOHandler);
+void Rojo(GPIO_Handler_t *pGPIOHandler);
+void Azul(GPIO_Handler_t *pGPIOHandler);
 
 #endif /* CINTALEDDRIVER_H_ */

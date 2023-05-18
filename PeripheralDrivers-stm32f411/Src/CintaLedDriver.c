@@ -8,12 +8,12 @@
 #include "CintaLedDriver.h"
 
 /*====Funcion para crear un uno en la Cinta Led=====*/
-void Uno(void){
+void Uno(GPIO_Handler_t *pGPIOHandler){
 	__NOP();
 	__NOP();
 	__NOP();
 
-	GPIOA->ODR |= (1<<8);
+	pGPIOHandler->pGPIOx->ODR |= (1 << pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber);
 	__NOP();
 	__NOP();
 	__NOP();
@@ -53,7 +53,7 @@ void Uno(void){
 	__NOP();
 	__NOP();
 
-	GPIOA->ODR |= (0<<8);
+	pGPIOHandler->pGPIOx->ODR |= (0 << pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber);
 	__NOP();
 	__NOP();
 	__NOP();
@@ -97,9 +97,9 @@ void Uno(void){
 }
 
 /*====Funcion para crear un cero en la cinta led====*/
-void Cero(void){
+void Cero(GPIO_Handler_t *pGPIOHandler){
 
-		GPIOA->ODR |= (1<<8);
+		pGPIOHandler->pGPIOx->ODR |= (1 << pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber);
 		__NOP();
 		__NOP();
 		__NOP();
@@ -179,7 +179,7 @@ void Cero(void){
 		__NOP();
 		__NOP();
 
-		GPIOA->ODR |= (0<<8);
+		pGPIOHandler->pGPIOx->ODR |= (0 << pGPIOHandler->GPIO_PinConfig.GPIO_PinNumber);
 		__NOP();
 		__NOP();
 		__NOP();
@@ -194,95 +194,95 @@ void Cero(void){
  * */
 
 //Verde
-void Verde(void){
+void Verde(GPIO_Handler_t *pGPIOHandler){
 	//8 bits Verde
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
 	//8 bits Rojo
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
 	//8 bits Azul
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
 }
 
 //Rojo
-void Rojo(void){
+void Rojo(GPIO_Handler_t *pGPIOHandler){
 	//8 bits Verde
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
 	//8 bits Rojo
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
 	//8 bits Azul
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
 }
 
 //Azul
-void Azul(void){
+void Azul(GPIO_Handler_t *pGPIOHandler){
 	//8 bits Verde
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
 	//8 bits Rojo
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
-	Cero();
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
+	Cero(&*pGPIOHandler);
 	//8 bits Azul
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
-	Uno();
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
+	Uno(&*pGPIOHandler);
 }
 
