@@ -360,24 +360,24 @@ void extInt_Config(EXTI_Config_t *extiConfig){
 	case 12: {
 		/* AFIO_EXTICR4 */
 		// Limpiamos primero la posición que deseamos configurar
-		AFIO->EXTICR[4] &= ~(0xF << AFIO_EXTICR4_EXTI12_Pos);
+		AFIO->EXTICR[3] &= ~(0xF << AFIO_EXTICR4_EXTI12_Pos);
 
 		// Ahora seleccionamos el valor a cargar en la posición, segun sea la selección
 		// del puerto que vamos a utilizar: GPIOA_1, ó GPIOB_1, ó GPIOC_1, etc
 		if (extiConfig->pGPIOHandler->pGPIOx == GPIOA) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI12_PA);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI12_PA);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOB) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI12_PB);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI12_PB);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOC) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI12_PC);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI12_PC);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOD) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI12_PD);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI12_PD);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOE) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI12_PE);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI12_PE);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOF) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI12_PF);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI12_PF);
 		} else if(extiConfig->pGPIOHandler->pGPIOx == GPIOG){
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI12_PG);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI12_PG);
 		} else {
 		__NOP();
 		}
@@ -388,24 +388,24 @@ void extInt_Config(EXTI_Config_t *extiConfig){
 	case 13: {
 		/* AFIO_EXTICR4 */
 		// Limpiamos primero la posición que deseamos configurar
-		AFIO->EXTICR[4] &= ~(0xF << AFIO_EXTICR4_EXTI13_Pos);
+		AFIO->EXTICR[3] &= ~(0xF << AFIO_EXTICR4_EXTI13_Pos);
 
 		// Ahora seleccionamos el valor a cargar en la posición, segun sea la selección
 		// del puerto que vamos a utilizar: GPIOA_1, ó GPIOB_1, ó GPIOC_1, etc
 		if (extiConfig->pGPIOHandler->pGPIOx == GPIOA) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI13_PA);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI13_PA);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOB) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI13_PB);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI13_PB);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOC) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI13_PC);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI13_PC);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOD) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI13_PD);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI13_PD);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOE) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI13_PE);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI13_PE);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOF) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI13_PF);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI13_PF);
 		} else if(extiConfig->pGPIOHandler->pGPIOx == GPIOG){
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI13_PG);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI13_PG);
 		} else {
 		__NOP();
 		}
@@ -416,24 +416,24 @@ void extInt_Config(EXTI_Config_t *extiConfig){
 	case 14: {
 		/* AFIO_EXTICR4 */
 		// Limpiamos primero la posición que deseamos configurar
-		AFIO->EXTICR[4] &= ~(0xF << AFIO_EXTICR4_EXTI14_Pos);
+		AFIO->EXTICR[3] &= ~(0xF << AFIO_EXTICR4_EXTI14_Pos);
 
 		// Ahora seleccionamos el valor a cargar en la posición, segun sea la selección
 		// del puerto que vamos a utilizar: GPIOA_1, ó GPIOB_1, ó GPIOC_1, etc
 		if (extiConfig->pGPIOHandler->pGPIOx == GPIOA) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI14_PA);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI14_PA);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOB) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI14_PB);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI14_PB);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOC) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI14_PC);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI14_PC);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOD) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI14_PD);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI14_PD);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOE) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI14_PE);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI14_PE);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOF) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI14_PF);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI14_PF);
 		} else if(extiConfig->pGPIOHandler->pGPIOx == GPIOG){
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI14_PG);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI14_PG);
 		} else {
 		__NOP();
 		}
@@ -444,24 +444,24 @@ void extInt_Config(EXTI_Config_t *extiConfig){
 	case 15: {
 		/* AFIO_EXTICR4 */
 		// Limpiamos primero la posición que deseamos configurar
-		AFIO->EXTICR[4] &= ~(0xF << AFIO_EXTICR4_EXTI15_Pos);
+		AFIO->EXTICR[3] &= ~(0xF << AFIO_EXTICR4_EXTI15_Pos);
 
 		// Ahora seleccionamos el valor a cargar en la posición, segun sea la selección
 		// del puerto que vamos a utilizar: GPIOA_1, ó GPIOB_1, ó GPIOC_1, etc
 		if (extiConfig->pGPIOHandler->pGPIOx == GPIOA) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI15_PA);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI15_PA);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOB) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI15_PB);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI15_PB);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOC) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI15_PC);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI15_PC);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOD) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI15_PD);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI15_PD);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOE) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI15_PE);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI15_PE);
 		} else if (extiConfig->pGPIOHandler->pGPIOx == GPIOF) {
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI15_PF);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI15_PF);
 		} else if(extiConfig->pGPIOHandler->pGPIOx == GPIOG){
-			AFIO->EXTICR[4] |= (AFIO_EXTICR4_EXTI15_PG);
+			AFIO->EXTICR[3] |= (AFIO_EXTICR4_EXTI15_PG);
 		} else {
 		__NOP();
 		}

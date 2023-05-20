@@ -96,7 +96,7 @@ void initSystem(void){
 
 	//Configuracion con la cual se maneja el timer
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_mode				= BTIMER_MODE_UP;
-	handlerTimerBlinkyPin.TIMx_Config.TIMx_period			= 250;
+	handlerTimerBlinkyPin.TIMx_Config.TIMx_period			= 100;
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_speed			= BTIMER_SPEED_1ms;
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_interruptEnable	= SET;
 
