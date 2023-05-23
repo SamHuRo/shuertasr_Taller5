@@ -40,8 +40,8 @@ uint32_t systemTicksEnd = 0;
 /*==========================
  * Configuracion para el I2C
  * ==========================*/
-GPIO_Handler_t handlerI2cSDA = {0};
-GPIO_Handler_t handlerI2cSCL = {0};
+GPIO_Handler_t SDAAccel = {0};
+GPIO_Handler_t SCLAccel = {0};
 I2C_Handler_t handlerAccelerometer = {0};
 uint8_t i2cBuffer = 0;
 
@@ -209,29 +209,29 @@ void initSystem(void){
 	//Cargar la configuracion del USART
 	USART_Config(&handlerCommTerminal);
 
-	/*----Configuracion para el protocolo I2C----*/
+	/*----Configuracion para el protocolo I2C para el Acelerometro----*/
 	//Configuracion de los pines para el I2C -> SCL
-	handlerI2cSCL.pGPIOx								= GPIOB;
-	handlerI2cSCL.GPIO_PinConfig.GPIO_PinNumber			= PIN_8;
-	handlerI2cSCL.GPIO_PinConfig.GPIO_PinMode			= GPIO_MODE_ALTFN;
-	handlerI2cSCL.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_OPENDRAIN;
-	handlerI2cSCL.GPIO_PinConfig.GPIO_PinPuPdControl	= GPIO_PUPDR_NOTHING;
-	handlerI2cSCL.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
-	handlerI2cSCL.GPIO_PinConfig.GPIO_PinAltFunMode		= AF4;
-	GPIO_Config(&handlerI2cSCL);
+	SCLAccel.pGPIOx											= GPIOB;
+	SCLAccel.GPIO_PinConfig.GPIO_PinNumber					= PIN_8;
+	SCLAccel.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	SCLAccel.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
+	SCLAccel.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
+	SCLAccel.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	SCLAccel.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
+	GPIO_Config(&SCLAccel);
 	//Configuracion de los pines para el I2C -> SDA
-	handlerI2cSDA.pGPIOx								= GPIOB;
-	handlerI2cSDA.GPIO_PinConfig.GPIO_PinNumber			= PIN_9;
-	handlerI2cSDA.GPIO_PinConfig.GPIO_PinMode			= GPIO_MODE_ALTFN;
-	handlerI2cSDA.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_OPENDRAIN;
-	handlerI2cSDA.GPIO_PinConfig.GPIO_PinPuPdControl	= GPIO_PUPDR_NOTHING;
-	handlerI2cSDA.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
-	handlerI2cSDA.GPIO_PinConfig.GPIO_PinAltFunMode		= AF4;
-	GPIO_Config(&handlerI2cSDA);
+	SDAAccel.pGPIOx											= GPIOB;
+	SDAAccel.GPIO_PinConfig.GPIO_PinNumber					= PIN_9;
+	SDAAccel.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	SDAAccel.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
+	SDAAccel.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
+	SDAAccel.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	SDAAccel.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
+	GPIO_Config(&SDAAccel);
 	//Configuracion de la cominicacion I2C
-	handlerAccelerometer.ptrI2Cx			= I2C1;
-	handlerAccelerometer.modeI2C			= I2C_MODE_FM;
-	handlerAccelerometer.slaveAddress		= ACCEL_ADDRESS;
+	handlerAccelerometer.ptrI2Cx							= I2C1;
+	handlerAccelerometer.modeI2C							= I2C_MODE_FM;
+	handlerAccelerometer.slaveAddress						= ACCEL_ADDRESS;
 	i2c_Config(&handlerAccelerometer);
 }
 
