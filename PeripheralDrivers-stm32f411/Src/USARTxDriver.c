@@ -125,27 +125,54 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 	// 2.5 Configuracion del Baudrate (SFR USART_BRR)
 	// Ver tabla de valores (Tabla 73), Frec = 16MHz, overr = 0;
 	if(ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_9600){
-		// El valor a cargar es 104.1875 -> Mantiza = 104,fraction = 0.1875
-		// Mantiza = 104 = 0x68, fraction = 16 * 0.1875 = 3
-		// Valor a cargar 0x0683
-		// Configurando el Baudrate generator para una velocidad de 9600bps
-		ptrUsartHandler->ptrUSARTx->BRR = 0x0683;
+		if(ptrUsartHandler->USART_Config.USART_PLL_Enable == 0){
+			// El valor a cargar es 104.1875 -> Mantiza = 104,fraction = 0.1875
+			// Mantiza => 104 = 0x68, fraction => 16 * 0.1875 = 3
+			// Valor a cargar 0x0683
+			// Configurando el Baudrate generator para una velocidad de 9600bps
+			ptrUsartHandler->ptrUSARTx->BRR = 0x0683;
+		}else if(ptrUsartHandler->USART_Config.USART_PLL_Enable == 1){
+			// El valor a cargar es 546.875 -> Mantiza = 546,fraction = 0.875
+			// Mantiza => 546 = 0x222, fraction = 80 * 0.875 = 70 = 0x46
+			// Valor a cargar 0x22246
+			// Configurando el Baudrate generator para una velocidad de 9600bps
+			ptrUsartHandler->ptrUSARTx->BRR = 0x22246;
+		}
+
 	}
 
 	else if (ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_19200) {
-		// El valor a cargar es 52.0625 -> Mantiza = 52,fraction = 0.0625
-		// Mantiza = 52 = 0x34, fraction = 16 * 0.1875 = 1
-		// BRR = 0x0341
-		// Escriba acá su código y los comentarios que faltan
-		ptrUsartHandler->ptrUSARTx->BRR = 0x0341;
+		if(ptrUsartHandler->USART_Config.USART_PLL_Enable == 0){
+			// El valor a cargar es 52.0625 -> Mantiza = 52,fraction = 0.0625
+			// Mantiza = 52 = 0x34, fraction = 16 * 0.0625 = 1
+			// BRR = 0x0341
+			// Escriba acá su código y los comentarios que faltan
+			ptrUsartHandler->ptrUSARTx->BRR = 0x0341;
+		}else if(ptrUsartHandler->USART_Config.USART_PLL_Enable == 1){
+			// El valor a cargar es 273.4375 -> Mantiza = 273,fraction = 0.4375
+			// Mantiza => 273 = 0x111, fraction = 80 * 0.4375 = 35 = 0x23
+			// Valor a cargar 0x11123
+			// Configurando el Baudrate generator para una velocidad de 19200bps
+			ptrUsartHandler->ptrUSARTx->BRR = 0x0345;
+		}
+
 	}
 
 	else if(ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_115200){
-		// El valor a cargar es 8.625 -> Mantiza = 8, fraction = 0.6805
-		// Mantiza = 8 = 0x8, fraction = 16*0.6805 = 11 = 0xB
-		// BRR = 0x008B
-		// Escriba acá su código y los comentarios que faltan
-		ptrUsartHandler->ptrUSARTx->BRR = 0x008B;
+
+		if(ptrUsartHandler->USART_Config.USART_PLL_Enable == 0){
+			// El valor a cargar es 8.625 -> Mantiza = 8, fraction = 0.6805
+			// Mantiza = 8 = 0x8, fraction = 16 * 0.6805 = 11 = 0xB
+			// BRR = 0x008B
+			// Escriba acá su código y los comentarios que faltan
+			ptrUsartHandler->ptrUSARTx->BRR = 0x008B;
+		}else if(ptrUsartHandler->USART_Config.USART_PLL_Enable == 1){
+			// El valor a cargar es 45.5625 -> Mantiza = 45,fraction = 0.5625
+			// Mantiza => 45 = 0x2D, fraction = 80 * 0.5625 = 45 = 0x2D
+			// Valor a cargar 0x2D2D
+			// Configurando el Baudrate generator para una velocidad de 115200bps
+			ptrUsartHandler->ptrUSARTx->BRR = 0x2D2D;
+		}
 	}
 
 	// 2.6 Configuramos el modo: TX only, RX only, RXTX, disable
@@ -218,39 +245,6 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 		/*Volvemos a activar las interrupciones globales*/
 		__enable_irq();
 	}
-	/*Miramos si se activan las interrupciones para la transmicion*/
-	if(ptrUsartHandler->USART_Config.USART_enableIntTX == USART_TX_INTERRUP_ENABLE){
-		/*Desactivamos las configuraciones globales*/
-		__disable_irq();
-		//Limpiamos las posicion de la interrupcion
-		ptrUsartHandler->ptrUSARTx->CR1 &= ~USART_CR1_TXEIE;
-		//Activamos las interrupciones del USART
-		ptrUsartHandler->ptrUSARTx->CR1 |= USART_CR1_TXEIE;
-		//Matriculamos la interrupcion en el NVIC
-		if(ptrUsartHandler->ptrUSARTx == USART1){
-			__NVIC_EnableIRQ(USART1_IRQn);
-		}else if(ptrUsartHandler->ptrUSARTx == USART2){
-			__NVIC_EnableIRQ(USART2_IRQn);
-		}else if(ptrUsartHandler->ptrUSARTx == USART6){
-			__NVIC_EnableIRQ(USART6_IRQn);
-		}
-		//Volvemos a actiar las interrrupcionces globales
-		__enable_irq();
-	}
-
-	/*Si el PLL esta habilitado se va a realizar un prescaler en el USART para poder utilizarlo a 16 MHz*/
-	if(ptrUsartHandler->USART_Config.USART_PLL_Enable == PLL_ENABLE){
-		//Limpiamos el registro
-		ptrUsartHandler->ptrUSARTx->CR3 &= ~(USART_CR3_SCEN);
-		//Habilitamos el Smartcard para utilizar el prescaler del Usart
-		ptrUsartHandler->ptrUSARTx->CR3 |= (USART_CR3_SCEN);
-		//Ponemos el valor del prescaler que se va a utilizar
-		//Limpiamos el registro
-		ptrUsartHandler->ptrUSARTx->GTPR &= ~(USART_GTPR_PSC);
-		//Guardamos el valor del prescaler en el registro
-		ptrUsartHandler->ptrUSARTx->GTPR |= (ptrUsartHandler->USART_Config.USART_prescaler << USART_GTPR_PSC_Pos);
-	}
-
 }
 /*funcion para escribir un string*/
 void writeMsg(USART_Handler_t *ptrUsartHandler, char *msgToSend){
@@ -284,10 +278,10 @@ void USART1_IRQHandler(void){
 		auxRxData = (uint8_t) USART1->DR;
 		usart1Rx_Callback();
 	}
-	//Evaluamos si la interrupcion que se dio es por TX
-	else if(USART1->SR & USART_SR_TXE){
-		usart1Tx_Callback();
-	}
+//	//Evaluamos si la interrupcion que se dio es por TX
+//	else if(USART1->SR & USART_SR_TXE){
+//		usart1Tx_Callback();
+//	}
 }
 void USART2_IRQHandler(void){
 	//Evaluamos si la interrupcion que se dio es por RX
@@ -296,9 +290,9 @@ void USART2_IRQHandler(void){
 		usart2Rx_Callback();
 	}
 	//Evaluamos si la interrupcion que se dio es por TX
-	else if(USART1->SR & USART_SR_TXE){
-		usart2Tx_Callback();
-	}
+//	else if(USART1->SR & USART_SR_TXE){
+//		usart2Tx_Callback();
+//	}
 }
 void USART6_IRQHandler(void){
 	//Evaluamos si la interrupcion que se dio es por RX
@@ -306,10 +300,10 @@ void USART6_IRQHandler(void){
 		auxRxData = (uint8_t) USART6->DR;
 		usart6Rx_Callback();
 	}
-	//Evaluamos si la interrupcion que se dio es por TX
-	else if(USART1->SR & USART_SR_TXE){
-		usart6Tx_Callback();
-	}
+//	//Evaluamos si la interrupcion que se dio es por TX
+//	else if(USART1->SR & USART_SR_TXE){
+//		usart6Tx_Callback();
+//	}
 }
 
 /*Callback para la Recepcion*/
@@ -333,21 +327,21 @@ __attribute__((weak)) void usart6Rx_Callback(void){
 }
 
 /*Callback para la transmicion*/
-__attribute__((weak)) void usart1Tx_Callback(void){
-	/*NOTE: esta funcion should not be modified, when the callback is needed,
-	 * 		the BasicTimer_Callback could be implemented in the main file
-	 */
-	__NOP();
-}
-__attribute__((weak)) void usart2Tx_Callback(void){
-	/*NOTE: esta funcion should not be modified, when the callback is needed,
-	 * 		the BasicTimer_Callback could be implemented in the main file
-	 */
-	__NOP();
-}
-__attribute__((weak)) void usart6Tx_Callback(void){
-	/*NOTE: esta funcion should not be modified, when the callback is needed,
-	 * 		the BasicTimer_Callback could be implemented in the main file
-	 */
-	__NOP();
-}
+//__attribute__((weak)) void usart1Tx_Callback(void){
+//	/*NOTE: esta funcion should not be modified, when the callback is needed,
+//	 * 		the BasicTimer_Callback could be implemented in the main file
+//	 */
+//	__NOP();
+//}
+//__attribute__((weak)) void usart2Tx_Callback(void){
+//	/*NOTE: esta funcion should not be modified, when the callback is needed,
+//	 * 		the BasicTimer_Callback could be implemented in the main file
+//	 */
+//	__NOP();
+//}
+//__attribute__((weak)) void usart6Tx_Callback(void){
+//	/*NOTE: esta funcion should not be modified, when the callback is needed,
+//	 * 		the BasicTimer_Callback could be implemented in the main file
+//	 */
+//	__NOP();
+//}

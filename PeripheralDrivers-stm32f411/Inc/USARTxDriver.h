@@ -34,8 +34,8 @@
 #define USART_TX_INTERRUP_ENABLE	2
 #define USART_TX_INTERRUP_DISABLE	3
 
-#define PLL_ENABLE		0
-#define PLL_DISABLE		1
+#define PLL_DISABLE		0
+#define PLL_ENABLE		1
 
 /* Estructura para la configuración de la comunicacion:
  * Velocidad (baudrate)
@@ -88,7 +88,9 @@ uint8_t getRxData(void);
 void usart1Rx_Callback(void);
 void usart2Rx_Callback(void);
 void usart6Rx_Callback(void);
-
+void usart1Tx_Callback(void);
+void usart2Tx_Callback(void);
+void usart6Tx_Callback(void);
 
 
 #endif /* USARTXDRIVER_H_ */

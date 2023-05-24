@@ -8,6 +8,16 @@
 
 /*====Configuracion del PLL====*/
 void ConfigPLL(PLL_Config_t *pPLLHandler){
+	//Configuracion de la velocidad de los buses APB1 y APB2
+	//Prescaler para el bus APB1
+	RCC->CFGR &= ~RCC_CFGR_PPRE1; //Limpiamos el registro
+	RCC->CFGR |= RCC_CFGR_PPRE1_2; //Dividimos el reloj del AHB por 2
+
+	//Presacaler para el bus APB2
+	RCC->CFGR &= ~RCC_CFGR_PPRE2; //Limpiamos el registro
+	RCC->CFGR &= ~RCC_CFGR_PPRE2; //No se divide el reloj del AHB por algun valor
+
+
 	//Aseguramos la entrada del PLL es el HSI
 	RCC->PLLCFGR &= ~(RCC_PLLCFGR_PLLSRC);
 
@@ -112,14 +122,17 @@ uint16_t getConfigPLL(void){
 	auxPLLM = (RCC->PLLCFGR >> RCC_PLLCFGR_PLLM_Pos);
 	//Aplicamos la mascara para obtener solo el valor del registro PLLM
 	auxPLLM &= (RCC_PLLCFGR_PLLM);
+
 	//PLLN
 	auxPLLN = (RCC->PLLCFGR >> RCC_PLLCFGR_PLLN_Pos);
-	//Aplicamos la mascara para obtener solo el valor del registro PLLM
+	//Aplicamos la mascara para obtener solo el valor del registro PLLN
 	auxPLLN &= (RCC_PLLCFGR_PLLN);
+
 	//PLLP
 	auxPLLP = (RCC->PLLCFGR >> RCC_PLLCFGR_PLLP_Pos);
-	//Aplicamos la mascara para obtener solo el valor del registro PLLM
+	//Aplicamos la mascara para obtener solo el valor del registro PLLP
 	auxPLLP &= (RCC_PLLCFGR_PLLP);
+	//Hacemos un switch case para guardar el valor real del registro PLLP
 	switch(auxPLLP){
 	case 0:{
 		auxPLLP = 2;

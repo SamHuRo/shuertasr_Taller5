@@ -53,10 +53,15 @@ uint32_t systemTicksEnd = 0;
 /*==========================
  * Configuracion para el I2C
  * ==========================*/
+//Acelerometro
 GPIO_Handler_t SDAAccel = {0};
 GPIO_Handler_t SCLAccel = {0};
 I2C_Handler_t handlerAccelerometer = {0};
 uint8_t i2cBuffer = 0;
+//Display LCD
+GPIO_Handler_t SDADisplayLcd = {0};
+GPIO_Handler_t SCLDisplayLcd = {0};
+I2C_Handler_t handlerDisplayLcd = {0};
 
 /*Definicion de macros de las posiciones de memoria*/
 #define ACCEL_ADDRESS	0b1101001; //0xD2 -> Direccion del accel con Logic_1
@@ -69,6 +74,8 @@ uint8_t i2cBuffer = 0;
 
 #define PWR_MGMT_1		107 //Registros del power_manager_1, mantiene el equipo en reset
 #define WHO_AM_I		117 //Registros del who_am_i el cual es del MPU-6050 y es 0x68 (identificar que es el sensor)
+
+//#define LCD_ADDRESS
 
 /*============================
  * Configuracion del PLL
@@ -235,6 +242,7 @@ void initSystem(void){
 	handlerCommTerminal.USART_Config.USART_mode					= USART_MODE_RXTX;
 	handlerCommTerminal.USART_Config.USART_enableIntRX			= USART_RX_INTERRUP_ENABLE;
 	handlerCommTerminal.USART_Config.USART_enableIntTX			= USART_TX_INTERRUP_DISABLE;
+	handlerCommTerminal.USART_Config.USART_PLL_Enable			= PLL_DISABLE;
 	//Cargar la configuracion del USART
 	USART_Config(&handlerCommTerminal);
 
@@ -297,6 +305,31 @@ void initSystem(void){
 	handlerAccelerometer.modeI2C								= I2C_MODE_FM;
 	handlerAccelerometer.slaveAddress							= ACCEL_ADDRESS;
 	i2c_Config(&handlerAccelerometer);
+
+	/*----Configuracion para el protocolo I2C para el display LCD----*/
+	//Configuracion de los pines para el I2C -> SCL
+//	SCLDisplayLcd.pGPIOx										= GPIOB;
+//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinNumber					= PIN_10;
+//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
+//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinPuPdControl			= GPIO_PUPDR_NOTHING;
+//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
+//	GPIO_Config(&SCLDisplayLcd);
+//	//Configuracion de los pines para el I2C -> SDA
+//	SDADisplayLcd.pGPIOx										= GPIOB;
+//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinNumber					= PIN_11;
+//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
+//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinPuPdControl			= GPIO_PUPDR_NOTHING;
+//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
+//	GPIO_Config(&SDADisplayLcd);
+//	//Configuracion de la cominicacion I2C
+//	handlerDisplayLcd.ptrI2Cx									= I2C2;
+//	handlerDisplayLcd.modeI2C									= I2C_MODE_FM;
+//	handlerDisplayLcd.slaveAddress								= ;
+//	i2c_Config(&handlerDisplayLcd);
 
 	/*----Configuracion del PLL----*/
 	//Se configura la velocidad del MCU para que este a 80 MHz
