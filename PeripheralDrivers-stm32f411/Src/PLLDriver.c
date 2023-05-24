@@ -74,7 +74,7 @@ void ConfigPLL(PLL_Config_t *pPLLHandler){
 	}
 }
 
-//Funcion para entregar el estado de la configuracion del equipo
+/*=====Funcion para entregar el estado de la configuracion del equipo=====*/
 uint16_t getConfigPLL(void){
 	//Variable auxiliar para guardar la configuracion del equipo
 	uint16_t auxVariable = 0;

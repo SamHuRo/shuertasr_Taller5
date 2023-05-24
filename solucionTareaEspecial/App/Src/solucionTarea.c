@@ -45,6 +45,11 @@ GPIO_Handler_t SCLAccel = {0};
 I2C_Handler_t handlerAccelerometer = {0};
 uint8_t i2cBuffer = 0;
 
+/*============================
+ * Configuracion del PLL
+ * ===========================*/
+PLL_Config_t handlerPLL = {0}; //Se va a guardar la configuracion del PLL
+
 /*Definicion de macros de las posiciones de memoria*/
 #define ACCEL_ADDRESS	0b1101001; //0xD2 -> Direccion del accel con Logic_1
 #define ACCEL_XOUT_H	59 //0x3B
@@ -233,6 +238,14 @@ void initSystem(void){
 	handlerAccelerometer.modeI2C							= I2C_MODE_FM;
 	handlerAccelerometer.slaveAddress						= ACCEL_ADDRESS;
 	i2c_Config(&handlerAccelerometer);
+
+	/*----Configuracion del PLL----*/
+	//Se configura la velocidad del MCU para que este a 80 MHz
+	handlerPLL.PLL_PLLM										= 10;
+	handlerPLL.PLL_PLLN										= 100;
+	handlerPLL.PLL_PLLP										= PLLP_2;
+	//Cargar la configuracion del PLL
+	ConfigPLL(&handlerPLL);
 }
 
 /*Funcion del timer*/

@@ -24,8 +24,9 @@ typedef struct
 	uint8_t		PLL_PLLP; //El valor que va a tomar el registro PLLP
 }PLL_Config_t;
 
-
+//Funcion para la configuracion del PLL
 void ConfigPLL(PLL_Config_t *pPLLHandler);
+//Funcion para entregar el estado de la configuracion del equipo
 uint16_t getConfigPLL(void);
 
 #endif /* PLLDRIVER_H_ */
