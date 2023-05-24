@@ -56,10 +56,29 @@ void ConfigPLL(PLL_Config_t *pPLLHandler){
 	//Seleccionamos el PLL
 	RCC->CFGR |= (RCC_CFGR_MCO1);
 
+	//Limpiamos el reguistro del MCO1PRE
+	RCC->CFGR &= ~(RCC_CFGR_MCO1PRE);
 	//Utilizamos el prescaler para poder ver la señal en el osciloscopio
-	RCC->CFGR |= (RCC_CFGR_MCO1PRE_0);
-	RCC->CFGR |= (RCC_CFGR_MCO1PRE_1);
-	RCC->CFGR |= (RCC_CFGR_MCO1PRE_2);
+	switch(pPLLHandler->PLL_MCO1PRE){
+	case 0:{
+		RCC->CFGR |= (RCC_CFGR_MCO1PRE_2);
+		break;
+	}
+	case 1:{
+		RCC->CFGR |= (RCC_CFGR_MCO1PRE_0);
+		RCC->CFGR |= (RCC_CFGR_MCO1PRE_2);
+		break;
+	}
+	case 2:{
+		RCC->CFGR |= (RCC_CFGR_MCO1PRE_1);
+		RCC->CFGR |= (RCC_CFGR_MCO1PRE_2);
+		break;
+	}
+	case 3:{
+		RCC->CFGR |= (RCC_CFGR_MCO1PRE);
+		break;
+	}
+	}
 
 	//Cambiamos el CPU clock source cambiamoando los SW bits
 	RCC->CFGR &= ~(RCC_CFGR_SW);

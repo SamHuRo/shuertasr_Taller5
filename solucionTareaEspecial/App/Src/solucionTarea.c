@@ -49,6 +49,7 @@ uint8_t i2cBuffer = 0;
  * Configuracion del PLL
  * ===========================*/
 PLL_Config_t handlerPLL = {0}; //Se va a guardar la configuracion del PLL
+GPIO_Handler_t pinVerificacionPLL = {0};
 
 /*Definicion de macros de las posiciones de memoria*/
 #define ACCEL_ADDRESS	0b1101001; //0xD2 -> Direccion del accel con Logic_1
@@ -183,69 +184,80 @@ void initSystem(void){
 
 	/*----Configuracion de la comunicacion serial-----*/
 	//Configuracion para el pin de transmicion
-	handlerPinTX.pGPIOx 								= GPIOA;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinNumber			= PIN_2;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinMode			= GPIO_MODE_ALTFN;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF7;
+	handlerPinTX.pGPIOx 										= GPIOA;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinNumber					= PIN_11;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF8;
 	//Cargar la configuracion del pin
 	GPIO_Config(&handlerPinTX);
 	//configuracion del pin para la recepcion
-	handlerPinRX.pGPIOx									= GPIOA;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinNumber			= PIN_3;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinMode			= GPIO_MODE_ALTFN;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF7;
+	handlerPinRX.pGPIOx											= GPIOA;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinNumber					= PIN_12;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF8;
 	//Cargar la configuracion del pin
 	GPIO_Config(&handlerPinRX);
 	//Configuracion del USART
-	handlerCommTerminal.ptrUSARTx 							= USART2;
-	handlerCommTerminal.USART_Config.USART_baudrate 		= USART_BAUDRATE_115200;
-	handlerCommTerminal.USART_Config.USART_datasize			= USART_DATASIZE_8BIT;
-	handlerCommTerminal.USART_Config.USART_parity			= USART_PARITY_NONE;
-	handlerCommTerminal.USART_Config.USART_stopbits			= USART_STOPBIT_1;
-	handlerCommTerminal.USART_Config.USART_mode				= USART_MODE_RXTX;
-	handlerCommTerminal.USART_Config.USART_enableIntRX		= USART_RX_INTERRUP_ENABLE;
-	handlerCommTerminal.USART_Config.USART_enableIntTX		= USART_TX_INTERRUP_DISABLE;
+	handlerCommTerminal.ptrUSARTx 								= USART6;
+	handlerCommTerminal.USART_Config.USART_baudrate 			= USART_BAUDRATE_115200;
+	handlerCommTerminal.USART_Config.USART_datasize				= USART_DATASIZE_8BIT;
+	handlerCommTerminal.USART_Config.USART_parity				= USART_PARITY_NONE;
+	handlerCommTerminal.USART_Config.USART_stopbits				= USART_STOPBIT_1;
+	handlerCommTerminal.USART_Config.USART_mode					= USART_MODE_RXTX;
+	handlerCommTerminal.USART_Config.USART_enableIntRX			= USART_RX_INTERRUP_ENABLE;
+	handlerCommTerminal.USART_Config.USART_enableIntTX			= USART_TX_INTERRUP_DISABLE;
 	//Cargar la configuracion del USART
 	USART_Config(&handlerCommTerminal);
 
 	/*----Configuracion para el protocolo I2C para el Acelerometro----*/
 	//Configuracion de los pines para el I2C -> SCL
-	SCLAccel.pGPIOx											= GPIOB;
-	SCLAccel.GPIO_PinConfig.GPIO_PinNumber					= PIN_8;
-	SCLAccel.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
-	SCLAccel.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
-	SCLAccel.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
-	SCLAccel.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-	SCLAccel.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
+	SCLAccel.pGPIOx												= GPIOB;
+	SCLAccel.GPIO_PinConfig.GPIO_PinNumber						= PIN_8;
+	SCLAccel.GPIO_PinConfig.GPIO_PinMode						= GPIO_MODE_ALTFN;
+	SCLAccel.GPIO_PinConfig.GPIO_PinOPType						= GPIO_OTYPER_OPENDRAIN;
+	SCLAccel.GPIO_PinConfig.GPIO_PinPuPdControl					= GPIO_PUPDR_NOTHING;
+	SCLAccel.GPIO_PinConfig.GPIO_PinSpeed						= GPIO_OSPEED_FAST;
+	SCLAccel.GPIO_PinConfig.GPIO_PinAltFunMode					= AF4;
 	GPIO_Config(&SCLAccel);
 	//Configuracion de los pines para el I2C -> SDA
-	SDAAccel.pGPIOx											= GPIOB;
-	SDAAccel.GPIO_PinConfig.GPIO_PinNumber					= PIN_9;
-	SDAAccel.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
-	SDAAccel.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
-	SDAAccel.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
-	SDAAccel.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-	SDAAccel.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
+	SDAAccel.pGPIOx												= GPIOB;
+	SDAAccel.GPIO_PinConfig.GPIO_PinNumber						= PIN_9;
+	SDAAccel.GPIO_PinConfig.GPIO_PinMode						= GPIO_MODE_ALTFN;
+	SDAAccel.GPIO_PinConfig.GPIO_PinOPType						= GPIO_OTYPER_OPENDRAIN;
+	SDAAccel.GPIO_PinConfig.GPIO_PinPuPdControl					= GPIO_PUPDR_NOTHING;
+	SDAAccel.GPIO_PinConfig.GPIO_PinSpeed						= GPIO_OSPEED_FAST;
+	SDAAccel.GPIO_PinConfig.GPIO_PinAltFunMode					= AF4;
 	GPIO_Config(&SDAAccel);
 	//Configuracion de la cominicacion I2C
-	handlerAccelerometer.ptrI2Cx							= I2C1;
-	handlerAccelerometer.modeI2C							= I2C_MODE_FM;
-	handlerAccelerometer.slaveAddress						= ACCEL_ADDRESS;
+	handlerAccelerometer.ptrI2Cx								= I2C1;
+	handlerAccelerometer.modeI2C								= I2C_MODE_FM;
+	handlerAccelerometer.slaveAddress							= ACCEL_ADDRESS;
 	i2c_Config(&handlerAccelerometer);
 
 	/*----Configuracion del PLL----*/
 	//Se configura la velocidad del MCU para que este a 80 MHz
-	handlerPLL.PLL_PLLM										= 10;
-	handlerPLL.PLL_PLLN										= 100;
-	handlerPLL.PLL_PLLP										= PLLP_2;
+	handlerPLL.PLL_PLLM											= 10;
+	handlerPLL.PLL_PLLN											= 100;
+	handlerPLL.PLL_PLLP											= PLLP_2;
+	handlerPLL.PLL_MCO1PRE										= PLL_MCO1PRE_5;
 	//Cargar la configuracion del PLL
 	ConfigPLL(&handlerPLL);
+
+	//Pin para verificar que si se configuro correctamente el PLL
+	pinVerificacionPLL.pGPIOx									= GPIOA;
+	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinNumber			= PIN_8;
+	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
+	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_OPENDRAIN;
+	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
+	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinSpeed				= GPIO_OSPEED_FAST;
+	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinAltFunMode		= AF0;
+	GPIO_Config(&pinVerificacionPLL);
 }
 
 /*Funcion del timer*/
