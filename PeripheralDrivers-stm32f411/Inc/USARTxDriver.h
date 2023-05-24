@@ -34,6 +34,9 @@
 #define USART_TX_INTERRUP_ENABLE	2
 #define USART_TX_INTERRUP_DISABLE	3
 
+#define PLL_ENABLE		0
+#define PLL_DISABLE		1
+
 /* Estructura para la configuración de la comunicacion:
  * Velocidad (baudrate)
  * Tamaño de los datos
@@ -49,6 +52,8 @@ typedef struct
 	uint8_t USART_stopbits;
 	uint8_t USART_enableIntRX;
 	uint8_t USART_enableIntTX;
+	uint8_t USART_PLL_Enable;
+	uint8_t USART_prescaler;
 }USART_Config_t;
 
 /*

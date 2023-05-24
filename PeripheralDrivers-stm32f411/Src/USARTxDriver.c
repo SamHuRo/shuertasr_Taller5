@@ -219,6 +219,19 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 		__enable_irq();
 	}
 
+	/*Si el PLL esta habilitado se va a realizar un prescaler en el USART para poder utilizarlo a 16 MHz*/
+	if(ptrUsartHandler->USART_Config.USART_PLL_Enable == PLL_ENABLE){
+		//Limpiamos el registro
+		ptrUsartHandler->ptrUSARTx->CR3 &= ~(USART_CR3_SCEN);
+		//Habilitamos el Smartcard para utilizar el prescaler del Usart
+		ptrUsartHandler->ptrUSARTx->CR3 |= (USART_CR3_SCEN);
+		//Ponemos el valor del prescaler que se va a utilizar
+		//Limpiamos el registro
+		ptrUsartHandler->ptrUSARTx->GTPR &= ~(USART_GTPR_PSC);
+		//Guardamos el valor del prescaler en el registro
+		ptrUsartHandler->ptrUSARTx->GTPR |= (ptrUsartHandler->USART_Config.USART_prescaler << USART_GTPR_PSC_Pos);
+	}
+
 }
 /*funcion para escribir un string*/
 void writeMsg(USART_Handler_t *ptrUsartHandler, char *msgToSend){
