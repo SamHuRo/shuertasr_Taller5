@@ -197,7 +197,7 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 		ptrUsartHandler->ptrUSARTx->CR1 |= USART_CR1_UE;
 	}
 
-	/*Mirar si se activan las interrupciones*/
+	/*Mirar si se activan las interrupciones para la recepcion*/
 	if(ptrUsartHandler->USART_Config.USART_enableIntRX == USART_RX_INTERRUP_ENABLE){
 		/*Desactivamos las configuraciones globales*/
 		__disable_irq();
@@ -216,6 +216,25 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			__NVIC_EnableIRQ(USART6_IRQn);
 		}
 		/*Volvemos a activar las interrupciones globales*/
+		__enable_irq();
+	}
+	/*Miramos si se activan las interrupciones para la transmicion*/
+	if(ptrUsartHandler->USART_Config.USART_enableIntTX == USART_TX_INTERRUP_ENABLE){
+		/*Desactivamos las configuraciones globales*/
+		__disable_irq();
+		//Limpiamos las posicion de la interrupcion
+		ptrUsartHandler->ptrUSARTx->CR1 &= ~USART_CR1_TXEIE;
+		//Activamos las interrupciones del USART
+		ptrUsartHandler->ptrUSARTx->CR1 |= USART_CR1_TXEIE;
+		//Matriculamos la interrupcion en el NVIC
+		if(ptrUsartHandler->ptrUSARTx == USART1){
+			__NVIC_EnableIRQ(USART1_IRQn);
+		}else if(ptrUsartHandler->ptrUSARTx == USART2){
+			__NVIC_EnableIRQ(USART2_IRQn);
+		}else if(ptrUsartHandler->ptrUSARTx == USART6){
+			__NVIC_EnableIRQ(USART6_IRQn);
+		}
+		//Volvemos a actiar las interrrupcionces globales
 		__enable_irq();
 	}
 
@@ -265,12 +284,20 @@ void USART1_IRQHandler(void){
 		auxRxData = (uint8_t) USART1->DR;
 		usart1Rx_Callback();
 	}
+	//Evaluamos si la interrupcion que se dio es por TX
+	else if(USART1->SR & USART_SR_TXE){
+		usart1Tx_Callback();
+	}
 }
 void USART2_IRQHandler(void){
 	//Evaluamos si la interrupcion que se dio es por RX
 	if(USART2->SR & USART_SR_RXNE){
 		auxRxData = (uint8_t) USART2->DR;
 		usart2Rx_Callback();
+	}
+	//Evaluamos si la interrupcion que se dio es por TX
+	else if(USART1->SR & USART_SR_TXE){
+		usart2Tx_Callback();
 	}
 }
 void USART6_IRQHandler(void){
@@ -279,10 +306,13 @@ void USART6_IRQHandler(void){
 		auxRxData = (uint8_t) USART6->DR;
 		usart6Rx_Callback();
 	}
-	//
+	//Evaluamos si la interrupcion que se dio es por TX
+	else if(USART1->SR & USART_SR_TXE){
+		usart6Tx_Callback();
+	}
 }
 
-
+/*Callback para la Recepcion*/
 __attribute__((weak)) void usart1Rx_Callback(void){
 	/*NOTE: esta funcion should not be modified, when the callback is needed,
 	 * 		the BasicTimer_Callback could be implemented in the main file
@@ -296,6 +326,26 @@ __attribute__((weak)) void usart2Rx_Callback(void){
 	__NOP();
 }
 __attribute__((weak)) void usart6Rx_Callback(void){
+	/*NOTE: esta funcion should not be modified, when the callback is needed,
+	 * 		the BasicTimer_Callback could be implemented in the main file
+	 */
+	__NOP();
+}
+
+/*Callback para la transmicion*/
+__attribute__((weak)) void usart1Tx_Callback(void){
+	/*NOTE: esta funcion should not be modified, when the callback is needed,
+	 * 		the BasicTimer_Callback could be implemented in the main file
+	 */
+	__NOP();
+}
+__attribute__((weak)) void usart2Tx_Callback(void){
+	/*NOTE: esta funcion should not be modified, when the callback is needed,
+	 * 		the BasicTimer_Callback could be implemented in the main file
+	 */
+	__NOP();
+}
+__attribute__((weak)) void usart6Tx_Callback(void){
 	/*NOTE: esta funcion should not be modified, when the callback is needed,
 	 * 		the BasicTimer_Callback could be implemented in the main file
 	 */
