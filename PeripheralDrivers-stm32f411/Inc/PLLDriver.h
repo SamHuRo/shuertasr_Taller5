@@ -20,12 +20,12 @@
 typedef struct
 {
 	uint8_t 	PLL_PLLM; //El valor que va a tomar el registro PLLM
-	uint32_t	PLL_PLLN; //El valor que va a tomar el registro PLLN
+	uint16_t	PLL_PLLN; //El valor que va a tomar el registro PLLN
 	uint8_t		PLL_PLLP; //El valor que va a tomar el registro PLLP
 }PLL_Config_t;
 
 
 void ConfigPLL(PLL_Config_t *pPLLHandler);
-void getConfigPLL(void);
+uint16_t getConfigPLL(void);
 
 #endif /* PLLDRIVER_H_ */
