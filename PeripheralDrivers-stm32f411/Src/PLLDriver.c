@@ -58,8 +58,7 @@ void ConfigPLL(PLL_Config_t *pPLLHandler){
 	 * los registros*/
 
 	FLASH->ACR &= ~(FLASH_ACR_LATENCY); //Limpiamos el registro
-	//3WS de latencia
-	FLASH->ACR |= FLASH_ACR_LATENCY_1WS;
+	//2 WS de latencia
 	FLASH->ACR |= FLASH_ACR_LATENCY_2WS;
 
 	//Limpiar el registro del MCO1
@@ -72,17 +71,15 @@ void ConfigPLL(PLL_Config_t *pPLLHandler){
 	//Utilizamos el prescaler para poder ver la señal en el osciloscopio
 	switch(pPLLHandler->PLL_MCO1PRE){
 	case 0:{
-		RCC->CFGR |= (RCC_CFGR_MCO1PRE_2);
+		RCC->CFGR |= (0b100 << RCC_CFGR_MCO1PRE_Pos);
 		break;
 	}
 	case 1:{
-		RCC->CFGR |= (RCC_CFGR_MCO1PRE_0);
-		RCC->CFGR |= (RCC_CFGR_MCO1PRE_2);
+		RCC->CFGR |= (0b101 << RCC_CFGR_MCO1PRE_Pos);
 		break;
 	}
 	case 2:{
-		RCC->CFGR |= (RCC_CFGR_MCO1PRE_1);
-		RCC->CFGR |= (RCC_CFGR_MCO1PRE_2);
+		RCC->CFGR |= (0b110 << RCC_CFGR_MCO1PRE_Pos);
 		break;
 	}
 	case 3:{
@@ -104,7 +101,8 @@ void ConfigPLL(PLL_Config_t *pPLLHandler){
 	}
 
 	//Activar el PLL para todo el MCU
-	RCC->CFGR |= RCC_CFGR_SW_PLL;
+	RCC->CFGR &= ~RCC_CFGR_SW_1;
+	RCC->CFGR |= RCC_CFGR_SW_1;
 }
 
 /*=====Funcion para entregar el estado de la configuracion del equipo=====*/
