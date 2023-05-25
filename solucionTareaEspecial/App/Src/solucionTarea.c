@@ -95,6 +95,8 @@ PLL_Config_t handlerPLL = {0}; //Se va a guardar la configuracion del PLL
 GPIO_Handler_t pinVerificacionPLL = {0};
 uint16_t freqMCU = 0; //Variable para guardar la configuracion del MCU
 
+uint16_t var = 0;
+
 
 /*=========================
  * Cabeceras de las funciones
@@ -109,14 +111,16 @@ int main(void){
 	initSystem();
 
 	//Imprimir un mensaje de inicio
-//	writeMsg(&handlerCommTerminal, bufferData);
+//	writeMsg(&handlerUSART6, bufferData);
 
 	/* Main Loop*/
 	while(1){
-//		writeCharTX(&handlerCommTerminal, 'p');
 		if(rxData != '\0'){
 			if(rxData == 'h'){
-				writeMsgTX(&handlerCommTerminal, "Hola mundo");
+				//Prueba con el USART2
+//				writeMsgTX(&handlerCommTerminal, "Hola mundo cruel\n");
+				//Prueba con el USART6
+				writeMsgTX(&handlerUSART6, "Hola mundo\n");
 				rxData = '\0';
 			}
 		}
@@ -210,8 +214,10 @@ int main(void){
  * ================================================*/
 void initSystem(void){
 	/* ----Configuracion del Blinky Pin---- */
-	BlinkyPin.pGPIOx											= GPIOH;
-	BlinkyPin.GPIO_PinConfig.GPIO_PinNumber						= PIN_1;
+//	BlinkyPin.pGPIOx											= GPIOH;
+//	BlinkyPin.GPIO_PinConfig.GPIO_PinNumber						= PIN_1;
+	BlinkyPin.pGPIOx											= GPIOA;
+	BlinkyPin.GPIO_PinConfig.GPIO_PinNumber						= PIN_5;
 	BlinkyPin.GPIO_PinConfig.GPIO_PinMode						= GPIO_MODE_OUT;
 	BlinkyPin.GPIO_PinConfig.GPIO_PinOPType						= GPIO_OTYPER_PUSHPULL;
 	BlinkyPin.GPIO_PinConfig.GPIO_PinSpeed						= GPIO_OSPEED_HIGH;
@@ -223,6 +229,7 @@ void initSystem(void){
 	//Configuracion con la cual se maneja el timer
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_mode					= BTIMER_MODE_UP;
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_period				= 2500;
+//	handlerTimerBlinkyPin.TIMx_Config.TIMx_speed				= BTIMER_SPEED_100us;
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_speed				= BTIMER_SPEED_100us_80MHz;
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_interruptEnable		= SET;
 	//Cargar la configuracion del Timer
@@ -232,38 +239,38 @@ void initSystem(void){
 	/*======
 	 *USART2
 	 *======*/
-	//Configuracion para el pin de transmicion
-	handlerPinTX.pGPIOx 										= GPIOA;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinNumber					= PIN_2;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
-	//Cargar la configuracion del pin
-	GPIO_Config(&handlerPinTX);
-	//configuracion del pin para la recepcion
-	handlerPinRX.pGPIOx											= GPIOA;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinNumber					= PIN_3;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
-	//Cargar la configuracion del pin
-	GPIO_Config(&handlerPinRX);
-	//Configuracion del USART
-	handlerCommTerminal.ptrUSARTx 								= USART2;
-	handlerCommTerminal.USART_Config.USART_baudrate 			= USART_BAUDRATE_115200;
-	handlerCommTerminal.USART_Config.USART_datasize				= USART_DATASIZE_8BIT;
-	handlerCommTerminal.USART_Config.USART_parity				= USART_PARITY_NONE;
-	handlerCommTerminal.USART_Config.USART_stopbits				= USART_STOPBIT_1;
-	handlerCommTerminal.USART_Config.USART_mode					= USART_MODE_RXTX;
-	handlerCommTerminal.USART_Config.USART_enableIntRX			= USART_RX_INTERRUP_ENABLE;
-	handlerCommTerminal.USART_Config.USART_enableIntTX			= USART_TX_INTERRUP_ENABLE;
-	handlerCommTerminal.USART_Config.USART_PLL_Enable			= PLL_DISABLE;
-	//Cargar la configuracion del USART
-	USART_Config(&handlerCommTerminal);
+//	//Configuracion para el pin de transmicion
+//	handlerPinTX.pGPIOx 										= GPIOA;
+//	handlerPinTX.GPIO_PinConfig.GPIO_PinNumber					= PIN_2;
+//	handlerPinTX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+//	handlerPinTX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
+//	handlerPinTX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
+//	handlerPinTX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+//	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
+//	//Cargar la configuracion del pin
+//	GPIO_Config(&handlerPinTX);
+//	//configuracion del pin para la recepcion
+//	handlerPinRX.pGPIOx											= GPIOA;
+//	handlerPinRX.GPIO_PinConfig.GPIO_PinNumber					= PIN_3;
+//	handlerPinRX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+//	handlerPinRX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
+//	handlerPinRX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
+//	handlerPinRX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+//	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
+//	//Cargar la configuracion del pin
+//	GPIO_Config(&handlerPinRX);
+//	//Configuracion del USART
+//	handlerCommTerminal.ptrUSARTx 								= USART2;
+//	handlerCommTerminal.USART_Config.USART_baudrate 			= USART_BAUDRATE_115200;
+//	handlerCommTerminal.USART_Config.USART_datasize				= USART_DATASIZE_8BIT;
+//	handlerCommTerminal.USART_Config.USART_parity				= USART_PARITY_NONE;
+//	handlerCommTerminal.USART_Config.USART_stopbits				= USART_STOPBIT_1;
+//	handlerCommTerminal.USART_Config.USART_mode					= USART_MODE_RXTX;
+//	handlerCommTerminal.USART_Config.USART_enableIntRX			= USART_RX_INTERRUP_ENABLE;
+//	handlerCommTerminal.USART_Config.USART_enableIntTX			= USART_TX_INTERRUP_ENABLE;
+//	handlerCommTerminal.USART_Config.USART_PLL_Enable			= PLL_DISABLE;
+//	//Cargar la configuracion del USART
+//	USART_Config(&handlerCommTerminal);
 
 	/*=====
 	 *USART6
@@ -297,6 +304,7 @@ void initSystem(void){
 	handlerUSART6.USART_Config.USART_mode						= USART_MODE_RXTX;
 	handlerUSART6.USART_Config.USART_enableIntRX				= USART_RX_INTERRUP_ENABLE;
 	handlerUSART6.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_ENABLE;
+	handlerUSART6.USART_Config.USART_PLL_Enable					= PLL_ENABLE;
 	//Cargar la configuracion del USART
 	USART_Config(&handlerUSART6);
 
@@ -327,47 +335,47 @@ void initSystem(void){
 
 	/*----Configuracion para el protocolo I2C para el display LCD----*/
 	//Configuracion de los pines para el I2C -> SCL
-//	SCLDisplayLcd.pGPIOx										= GPIOB;
-//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinNumber					= PIN_10;
-//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
-//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
-//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinPuPdControl			= GPIO_PUPDR_NOTHING;
-//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-//	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
-//	GPIO_Config(&SCLDisplayLcd);
-//	//Configuracion de los pines para el I2C -> SDA
-//	SDADisplayLcd.pGPIOx										= GPIOB;
-//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinNumber					= PIN_11;
-//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
-//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
-//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinPuPdControl			= GPIO_PUPDR_NOTHING;
-//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-//	SDADisplayLcd.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
-//	GPIO_Config(&SDADisplayLcd);
-//	//Configuracion de la cominicacion I2C
-//	handlerDisplayLcd.ptrI2Cx									= I2C2;
-//	handlerDisplayLcd.modeI2C									= I2C_MODE_FM;
-//	handlerDisplayLcd.slaveAddress								= ;
-//	i2c_Config(&handlerDisplayLcd);
+	SCLDisplayLcd.pGPIOx										= GPIOB;
+	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinNumber					= PIN_10;
+	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
+	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinPuPdControl			= GPIO_PUPDR_NOTHING;
+	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	SCLDisplayLcd.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
+	GPIO_Config(&SCLDisplayLcd);
+	//Configuracion de los pines para el I2C -> SDA
+	SDADisplayLcd.pGPIOx										= GPIOB;
+	SDADisplayLcd.GPIO_PinConfig.GPIO_PinNumber					= PIN_11;
+	SDADisplayLcd.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	SDADisplayLcd.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_OPENDRAIN;
+	SDADisplayLcd.GPIO_PinConfig.GPIO_PinPuPdControl			= GPIO_PUPDR_NOTHING;
+	SDADisplayLcd.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	SDADisplayLcd.GPIO_PinConfig.GPIO_PinAltFunMode				= AF4;
+	GPIO_Config(&SDADisplayLcd);
+	//Configuracion de la cominicacion I2C
+	handlerDisplayLcd.ptrI2Cx									= I2C2;
+	handlerDisplayLcd.modeI2C									= I2C_MODE_FM;
+	i2c_Config(&handlerDisplayLcd);
 
 	/*----Configuracion del PLL----*/
 	//Se configura la velocidad del MCU para que este a 80 MHz
-//	handlerPLL.PLL_PLLM											= 10;
-//	handlerPLL.PLL_PLLN											= 100;
-//	handlerPLL.PLL_PLLP											= PLLP_2;
-//	handlerPLL.PLL_MCO1PRE										= PLL_MCO1PRE_5;
-//	//Cargar la configuracion del PLL
-//	ConfigPLL(&handlerPLL);
+	handlerPLL.PLL_PLLM											= 10;
+	handlerPLL.PLL_PLLN											= 100;
+	handlerPLL.PLL_PLLP											= PLLP_2;
+	handlerPLL.PLL_MCO1PRE										= PLL_MCO1PRE_4;
+	//Cargar la configuracion del PLL
+	ConfigPLL(&handlerPLL);
 
+	/*====Verificacion del PLL====*/
 	//Pin para verificar que si se configuro correctamente el PLL
-	pinVerificacionPLL.pGPIOx									= GPIOA;
-	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinNumber			= PIN_8;
-	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
-	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_OPENDRAIN;
-	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
-	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinSpeed				= GPIO_OSPEED_FAST;
-	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinAltFunMode		= AF0;
-	GPIO_Config(&pinVerificacionPLL);
+//	pinVerificacionPLL.pGPIOx									= GPIOA;
+//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinNumber			= PIN_8;
+//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
+//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_OPENDRAIN;
+//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
+//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinSpeed				= GPIO_OSPEED_FAST;
+//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinAltFunMode		= AF0;
+//	GPIO_Config(&pinVerificacionPLL);
 }
 
 /*Funcion del timer*/
@@ -382,4 +390,5 @@ void usart2Rx_Callback(void){
 	//Esto ademas debe bajar la bandera de la interrupcion
 	rxData = getRxData();
 }
+
 
