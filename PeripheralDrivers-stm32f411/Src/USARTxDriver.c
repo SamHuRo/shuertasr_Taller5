@@ -11,8 +11,10 @@
 uint8_t auxRxData = 0;
 uint8_t auxFun = 0;
 char dataSendTX = 0;
-char auxArreglo[] = {0};
+char auxArreglo[100];
 uint32_t contador = 0;
+volatile uint16_t tx_index = 0;
+volatile uint16_t tx_length = 0;
 
 /**
  * Configurando el puerto Serial...
@@ -289,9 +291,9 @@ int writeChar(USART_Handler_t *ptrUsartHandler, char dataToSend){
 
 /*Funcion para enviar un dato con la interrupcion de TX*/
 int writeCharTX(USART_Handler_t *ptrUsartHandler, char dataToSend){
-	//Actiavmos las interrupciones de transmicion
+	//Actiavmos las interrupciones de transmision
 	ptrUsartHandler->ptrUSARTx->CR1 |= USART_CR1_TXEIE;
-	//Cargamos la variable de dataToSend en la variable global
+	//Cargamos la variable de dataToSend en la variable global dataToSendTX
 	dataSendTX = dataToSend;
 	//Le decimos al sistema que estamos en la funcion writeCharTX()
 	auxFun = 0;
@@ -300,15 +302,15 @@ int writeCharTX(USART_Handler_t *ptrUsartHandler, char dataToSend){
 }
 
 /*Funcion para enviar un string*/
-void writeMsgTX(USART_Handler_t *ptrUsartHandler, char msgToSend[]){
-	//Cargamos el valor en la variable global
-//	auxArreglo = msgToSend;
+void writeMsgTX(USART_Handler_t *ptrUsartHandler, char *msgToSend){
+	//Copiamos el valor en la variable global
+	strncpy(auxArreglo, msgToSend, 100);
+	tx_length = strlen(msgToSend);
+	tx_index = 0;
 	//Activamos las interrupciones de transmicion
 	ptrUsartHandler->ptrUSARTx->CR1 |= USART_CR1_TXEIE;
 	//Le decimos al sistema que estamos en la funcion writeMsgTX()
 	auxFun = 1;
-	//Ponemos en cero el contador
-	contador = 0;
 }
 
 /*Lectura del caracter que llega por la interface serial*/
@@ -326,10 +328,28 @@ void USART1_IRQHandler(void){
 	}
 	//Evaluamos si la interrupcion que se dio es por TX
 	else if(USART1->SR & USART_SR_TXE){
-		//Guardamos el mensaje a enviar en el DR
-		USART1->DR = dataSendTX;
-		//Bajar el registro de las interrupciones por transmicion
-		USART1->CR1 &= ~USART_CR1_TXEIE;
+		//El sistema entra en la funcion writeCaharTX()
+		if(auxFun == 0){
+			//Guardamos el mensaje a enviar en el DR
+			USART1->DR = dataSendTX;
+			//Bajar el registro de las interrupciones por transmision
+			USART1->CR1 &= ~USART_CR1_TXEIE;
+		}
+		//El sistema entra en la funcion writeMsgTX()
+		else if(auxFun == 1){
+			if(auxArreglo[tx_index] != '\0'){
+				if(tx_index < tx_length){
+					USART1->DR = auxArreglo[tx_index];
+					tx_index++;
+				}else{
+					//Bajar el registro de las interrupciones por transmision
+					USART1->CR1 &= ~USART_CR1_TXEIE;
+				}
+			}else if(auxArreglo[tx_index] == '\0'){
+				//Bajar el registro de las interrupciones por transmision
+				USART1->CR1 &= ~USART_CR1_TXEIE;
+			}
+		}
 	}
 }
 void USART2_IRQHandler(void){
@@ -340,18 +360,26 @@ void USART2_IRQHandler(void){
 	}
 	//Evaluamos si la interrupcion que se dio es por TX
 	else if(USART2->SR & USART_SR_TXE){
+		//El sistema entra en la funcion writeCaharTX()
 		if(auxFun == 0){
 			//Guardamos el mensaje a enviar en el DR
 			USART2->DR = dataSendTX;
-			//Bajar el registro de las interrupciones por transmicion
+			//Bajar el registro de las interrupciones por transmision
 			USART2->CR1 &= ~USART_CR1_TXEIE;
-		}else if(auxFun == 1){
-			if(auxArreglo[contador] == '\0'){
-				//Bajar el registro de las interrupciones por transmicion
+		}
+		//El sistema entra en la funcion writeMsgTX()
+		else if(auxFun == 1){
+			if(auxArreglo[tx_index] != '\0'){
+				if(tx_index < tx_length){
+					USART2->DR = auxArreglo[tx_index];
+					tx_index++;
+				}else{
+					//Bajar el registro de las interrupciones por transmision
+					USART2->CR1 &= ~USART_CR1_TXEIE;
+				}
+			}else if(auxArreglo[tx_index] == '\0'){
+				//Bajar el registro de las interrupciones por transmision
 				USART2->CR1 &= ~USART_CR1_TXEIE;
-			}else if(auxArreglo[contador] != '\0'){
-				USART2->DR = auxArreglo[contador];
-				contador++;
 			}
 		}
 	}
@@ -364,10 +392,28 @@ void USART6_IRQHandler(void){
 	}
 	//Evaluamos si la interrupcion que se dio es por TX
 	else if(USART6->SR & USART_SR_TXE){
-		//Guardamos el mensaje a enviar en el DR
-		USART6->DR = dataSendTX;
-		//Bajar el registro de las interrupciones por transmicion
-		USART6->CR1 &= ~USART_CR1_TXEIE;
+		//El sistema entra en la funcion writeCaharTX()
+		if(auxFun == 0){
+			//Guardamos el mensaje a enviar en el DR
+			USART6->DR = dataSendTX;
+			//Bajar el registro de las interrupciones por transmision
+			USART6->CR1 &= ~USART_CR1_TXEIE;
+		}
+		//El sistema entra en la funcion writeMsgTX()
+		else if(auxFun == 1){
+			if(auxArreglo[tx_index] != '\0'){
+				if(tx_index < tx_length){
+					USART6->DR = auxArreglo[tx_index];
+					tx_index++;
+				}else{
+					//Bajar el registro de las interrupciones por transmision
+					USART6->CR1 &= ~USART_CR1_TXEIE;
+				}
+			}else if(auxArreglo[tx_index] == '\0'){
+				//Bajar el registro de las interrupciones por transmision
+				USART6->CR1 &= ~USART_CR1_TXEIE;
+			}
+		}
 	}
 }
 

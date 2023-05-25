@@ -8,6 +8,8 @@
 #ifndef USARTXDRIVER_H_
 #define USARTXDRIVER_H_
 
+#include <string.h>
+
 #define USART_MODE_TX		0
 #define USART_MODE_RX		1
 #define USART_MODE_RXTX		2
@@ -82,6 +84,8 @@ void USART_Config(USART_Handler_t *ptrUsartHandler);
 
 int writeChar(USART_Handler_t *ptrUsartHandler, char dataToSend );
 void writeMsg(USART_Handler_t *ptrUsartHandler, char *msgToSend);
+int writeCharTX(USART_Handler_t *ptrUsartHandler, char dataToSend);
+void writeMsgTX(USART_Handler_t *ptrUsartHandler, char *msgToSend);
 
 uint8_t getRxData(void);
 

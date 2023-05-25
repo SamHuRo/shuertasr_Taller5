@@ -30,6 +30,14 @@
 GPIO_Handler_t BlinkyPin = {0};
 BasicTimer_Handler_t handlerTimerBlinkyPin = {0};
 
+/*========================
+ * Configuracion del PWM
+ * ======================*/
+GPIO_Handler_t Pwm1 = {0};
+GPIO_Handler_t Pwm2 = {0};
+GPIO_Handler_t Pwm3 = {0};
+PWM_Handler_t handlerPwm1 = {0};
+
 /*==============================
  * Configuracion del USART
  *===============================*/
@@ -46,6 +54,9 @@ USART_Handler_t handlerUSART6 = {0};
 uint8_t rxData = 0;
 char bufferData[24] = "accel MPU-6050 testing..";
 
+/*==========================
+ * Configuracion del SysTick
+ * =========================*/
 uint32_t systemTicks = 0;
 uint32_t systemTicksStart = 0;
 uint32_t systemTicksEnd = 0;
@@ -98,89 +109,97 @@ int main(void){
 	initSystem();
 
 	//Imprimir un mensaje de inicio
-	writeMsg(&handlerCommTerminal, bufferData);
+//	writeMsg(&handlerCommTerminal, bufferData);
 
 	/* Main Loop*/
 	while(1){
-		//Hacemos un "eco" con el valor que nos llega por el serial
+//		writeCharTX(&handlerCommTerminal, 'p');
 		if(rxData != '\0'){
-			writeChar(&handlerCommTerminal, rxData);
-
-			if(rxData == 'w'){
-				sprintf(bufferData, "WHO_AM_I? (r)\n");
-				writeMsg(&handlerCommTerminal, bufferData);
-
-				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
-				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
-				writeMsg(&handlerCommTerminal, bufferData);
-				rxData = '\0';
-			}
-			else if(rxData == 'p'){
-				sprintf(bufferData, "PWR_MGMT_1 stat (r)\n");
-				writeMsg(&handlerCommTerminal, bufferData);
-
-				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, PWR_MGMT_1);
-				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
-				writeMsg(&handlerCommTerminal, bufferData);
-				rxData = '\0';
-			}
-			else if(rxData == 'r'){
-				sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
-				writeMsg(&handlerCommTerminal, bufferData);
-
-				i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
-				rxData = '\0';
-			}
-			else if(rxData == 'r'){
-				sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
-				writeMsg(&handlerCommTerminal, bufferData);
-
-				i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
-				rxData = '\0';
-			}
-			else if(rxData == 'x'){
-				sprintf(bufferData, "Axis X data (r)\n");
-				writeMsg(&handlerCommTerminal, bufferData);
-
-				uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
-				uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
-				int16_t AccelX = AccelX_high << 8 | AccelX_low;
-				sprintf(bufferData, "AccelX = %d \n", (int) AccelX);
-				writeMsg(&handlerCommTerminal, bufferData);
-				rxData = '\0';
-			}
-			else if(rxData == 'y'){
-				sprintf(bufferData, "Axis Y data (r)\n");
-				writeMsg(&handlerCommTerminal, bufferData);
-
-				uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
-				uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
-				int16_t AccelY = AccelY_high << 8 | AccelY_low;
-				sprintf(bufferData, "AccelY = %d \n", (int) AccelY);
-				writeMsg(&handlerCommTerminal, bufferData);
-				rxData = '\0';
-			}
-			else if(rxData == 'z'){
-				sprintf(bufferData, "Axis Z data (r)\n");
-				writeMsg(&handlerCommTerminal, bufferData);
-
-				uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
-				uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
-				int16_t AccelZ = AccelZ_high << 8 | AccelZ_low;
-				sprintf(bufferData, "AccelZ = %d \n", (int) AccelZ);
-				writeMsg(&handlerCommTerminal, bufferData);
-				rxData = '\0';
-			}
-			else if(rxData == 'c'){
-				freqMCU = getConfigPLL();
-				sprintf(bufferData, "MCU Freq = %u \n", freqMCU);
-				writeMsg(&handlerCommTerminal, bufferData);
-				rxData = '\0';
-			}
-			else{
+			if(rxData == 'h'){
+				writeMsgTX(&handlerCommTerminal, "Hola mundo");
 				rxData = '\0';
 			}
 		}
+
+		//Hacemos un "eco" con el valor que nos llega por el serial
+//		if(rxData != '\0'){
+//			writeChar(&handlerCommTerminal, rxData);
+//
+//			if(rxData == 'w'){
+//				sprintf(bufferData, "WHO_AM_I? (r)\n");
+//				writeMsg(&handlerCommTerminal, bufferData);
+//
+//				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
+//				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
+//				writeMsg(&handlerCommTerminal, bufferData);
+//				rxData = '\0';
+//			}
+//			else if(rxData == 'p'){
+//				sprintf(bufferData, "PWR_MGMT_1 stat (r)\n");
+//				writeMsg(&handlerCommTerminal, bufferData);
+//
+//				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, PWR_MGMT_1);
+//				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
+//				writeMsg(&handlerCommTerminal, bufferData);
+//				rxData = '\0';
+//			}
+//			else if(rxData == 'r'){
+//				sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
+//				writeMsg(&handlerCommTerminal, bufferData);
+//
+//				i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
+//				rxData = '\0';
+//			}
+//			else if(rxData == 'r'){
+//				sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
+//				writeMsg(&handlerCommTerminal, bufferData);
+//
+//				i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
+//				rxData = '\0';
+//			}
+//			else if(rxData == 'x'){
+//				sprintf(bufferData, "Axis X data (r)\n");
+//				writeMsg(&handlerCommTerminal, bufferData);
+//
+//				uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
+//				uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
+//				int16_t AccelX = AccelX_high << 8 | AccelX_low;
+//				sprintf(bufferData, "AccelX = %d \n", (int) AccelX);
+//				writeMsg(&handlerCommTerminal, bufferData);
+//				rxData = '\0';
+//			}
+//			else if(rxData == 'y'){
+//				sprintf(bufferData, "Axis Y data (r)\n");
+//				writeMsg(&handlerCommTerminal, bufferData);
+//
+//				uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
+//				uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
+//				int16_t AccelY = AccelY_high << 8 | AccelY_low;
+//				sprintf(bufferData, "AccelY = %d \n", (int) AccelY);
+//				writeMsg(&handlerCommTerminal, bufferData);
+//				rxData = '\0';
+//			}
+//			else if(rxData == 'z'){
+//				sprintf(bufferData, "Axis Z data (r)\n");
+//				writeMsg(&handlerCommTerminal, bufferData);
+//
+//				uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
+//				uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
+//				int16_t AccelZ = AccelZ_high << 8 | AccelZ_low;
+//				sprintf(bufferData, "AccelZ = %d \n", (int) AccelZ);
+//				writeMsg(&handlerCommTerminal, bufferData);
+//				rxData = '\0';
+//			}
+//			else if(rxData == 'c'){
+//				freqMCU = getConfigPLL();
+//				sprintf(bufferData, "MCU Freq = %u \n", freqMCU);
+//				writeMsg(&handlerCommTerminal, bufferData);
+//				rxData = '\0';
+//			}
+//			else{
+//				rxData = '\0';
+//			}
+//		}
 	}
 	return 0;
 }
@@ -241,7 +260,7 @@ void initSystem(void){
 	handlerCommTerminal.USART_Config.USART_stopbits				= USART_STOPBIT_1;
 	handlerCommTerminal.USART_Config.USART_mode					= USART_MODE_RXTX;
 	handlerCommTerminal.USART_Config.USART_enableIntRX			= USART_RX_INTERRUP_ENABLE;
-	handlerCommTerminal.USART_Config.USART_enableIntTX			= USART_TX_INTERRUP_DISABLE;
+	handlerCommTerminal.USART_Config.USART_enableIntTX			= USART_TX_INTERRUP_ENABLE;
 	handlerCommTerminal.USART_Config.USART_PLL_Enable			= PLL_DISABLE;
 	//Cargar la configuracion del USART
 	USART_Config(&handlerCommTerminal);
@@ -277,7 +296,7 @@ void initSystem(void){
 	handlerUSART6.USART_Config.USART_stopbits					= USART_STOPBIT_1;
 	handlerUSART6.USART_Config.USART_mode						= USART_MODE_RXTX;
 	handlerUSART6.USART_Config.USART_enableIntRX				= USART_RX_INTERRUP_ENABLE;
-	handlerUSART6.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_DISABLE;
+	handlerUSART6.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_ENABLE;
 	//Cargar la configuracion del USART
 	USART_Config(&handlerUSART6);
 
@@ -333,12 +352,12 @@ void initSystem(void){
 
 	/*----Configuracion del PLL----*/
 	//Se configura la velocidad del MCU para que este a 80 MHz
-	handlerPLL.PLL_PLLM											= 10;
-	handlerPLL.PLL_PLLN											= 100;
-	handlerPLL.PLL_PLLP											= PLLP_2;
-	handlerPLL.PLL_MCO1PRE										= PLL_MCO1PRE_5;
-	//Cargar la configuracion del PLL
-	ConfigPLL(&handlerPLL);
+//	handlerPLL.PLL_PLLM											= 10;
+//	handlerPLL.PLL_PLLN											= 100;
+//	handlerPLL.PLL_PLLP											= PLLP_2;
+//	handlerPLL.PLL_MCO1PRE										= PLL_MCO1PRE_5;
+//	//Cargar la configuracion del PLL
+//	ConfigPLL(&handlerPLL);
 
 	//Pin para verificar que si se configuro correctamente el PLL
 	pinVerificacionPLL.pGPIOx									= GPIOA;

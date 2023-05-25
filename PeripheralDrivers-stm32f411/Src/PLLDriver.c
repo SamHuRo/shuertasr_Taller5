@@ -19,7 +19,8 @@ void ConfigPLL(PLL_Config_t *pPLLHandler){
 
 
 	//Aseguramos la entrada del PLL es el HSI
-	RCC->PLLCFGR &= ~(RCC_PLLCFGR_PLLSRC);
+	RCC->PLLCFGR &= ~(RCC_PLLCFGR_PLLSRC); //Limpiamos el registro
+	RCC->PLLCFGR |= (RCC_PLLCFGR_PLLSRC_HSI); //Cargamos
 
 	//Limpiamos el registro
 	RCC->PLLCFGR &= ~(RCC_PLLCFGR_PLLM);
@@ -101,6 +102,9 @@ void ConfigPLL(PLL_Config_t *pPLLHandler){
 	while(!(RCC->CR & RCC_CR_PLLRDY)){
 		__NOP();
 	}
+
+	//Activar el PLL para todo el MCU
+	RCC->CFGR |= RCC_CFGR_SW_PLL;
 }
 
 /*=====Funcion para entregar el estado de la configuracion del equipo=====*/
