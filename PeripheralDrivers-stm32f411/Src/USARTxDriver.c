@@ -9,6 +9,11 @@
 #include <USARTxDriver.h>
 
 uint8_t auxRxData = 0;
+uint8_t auxFun = 0;
+char dataSendTX = 0;
+char auxArreglo[] = {0};
+uint32_t contador = 0;
+
 /**
  * Configurando el puerto Serial...
  * Recordar que siempre se debe comenzar con activar la señal de reloj
@@ -132,11 +137,11 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Configurando el Baudrate generator para una velocidad de 9600bps
 			ptrUsartHandler->ptrUSARTx->BRR = 0x0683;
 		}else if(ptrUsartHandler->USART_Config.USART_PLL_Enable == 1){
-			// El valor a cargar es 546.875 -> Mantiza = 546,fraction = 0.875
-			// Mantiza => 546 = 0x222, fraction = 80 * 0.875 = 70 = 0x46
-			// Valor a cargar 0x22246
+			// El valor a cargar es 520.8333 -> Mantiza = 520,fraction = 0.8333
+			// Mantiza => 520 = 0x208, fraction = 16 * 0.833 = 13 = 0xD
+			// Valor a cargar 0x208D
 			// Configurando el Baudrate generator para una velocidad de 9600bps
-			ptrUsartHandler->ptrUSARTx->BRR = 0x22246;
+			ptrUsartHandler->ptrUSARTx->BRR = 0x208D;
 		}
 
 	}
@@ -149,11 +154,11 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Escriba acá su código y los comentarios que faltan
 			ptrUsartHandler->ptrUSARTx->BRR = 0x0341;
 		}else if(ptrUsartHandler->USART_Config.USART_PLL_Enable == 1){
-			// El valor a cargar es 273.4375 -> Mantiza = 273,fraction = 0.4375
-			// Mantiza => 273 = 0x111, fraction = 80 * 0.4375 = 35 = 0x23
-			// Valor a cargar 0x11123
+			// El valor a cargar es 260.41666 -> Mantiza = 260,fraction = 0.41666
+			// Mantiza => 260 = 0x104, fraction = 16 * 0.41666 = 6 = 0x6
+			// Valor a cargar 0x1046
 			// Configurando el Baudrate generator para una velocidad de 19200bps
-			ptrUsartHandler->ptrUSARTx->BRR = 0x0345;
+			ptrUsartHandler->ptrUSARTx->BRR = 0x1046;
 		}
 
 	}
@@ -167,11 +172,11 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Escriba acá su código y los comentarios que faltan
 			ptrUsartHandler->ptrUSARTx->BRR = 0x008B;
 		}else if(ptrUsartHandler->USART_Config.USART_PLL_Enable == 1){
-			// El valor a cargar es 45.5625 -> Mantiza = 45,fraction = 0.5625
-			// Mantiza => 45 = 0x2D, fraction = 80 * 0.5625 = 45 = 0x2D
-			// Valor a cargar 0x2D2D
+			// El valor a cargar es 43.40277 -> Mantiza = 43,fraction = 0.4027
+			// Mantiza => 43 = 0x2B, fraction = 16 * 0.4027 = 6 = 0x6
+			// Valor a cargar 0x02B6
 			// Configurando el Baudrate generator para una velocidad de 115200bps
-			ptrUsartHandler->ptrUSARTx->BRR = 0x2D2D;
+			ptrUsartHandler->ptrUSARTx->BRR = 0x02B6;
 		}
 	}
 
@@ -245,6 +250,23 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 		/*Volvemos a activar las interrupciones globales*/
 		__enable_irq();
 	}
+	/*Mirar si se activan las interrupciones para la recepcion*/
+	if(ptrUsartHandler->USART_Config.USART_enableIntTX == USART_TX_INTERRUP_ENABLE){
+		//Desactivamos las configuraciones globales
+		__disable_irq();
+		//Limpiamos la posicion de la interrupcion
+		ptrUsartHandler->ptrUSARTx->CR1 &= ~USART_CR1_TXEIE;
+		//Matriculamos las interrupciones en el NVIC
+		if(ptrUsartHandler->ptrUSARTx == USART1){
+			__NVIC_EnableIRQ(USART1_IRQn);
+		}else if(ptrUsartHandler->ptrUSARTx == USART2){
+			__NVIC_EnableIRQ(USART2_IRQn);
+		}else if(ptrUsartHandler->ptrUSARTx == USART6){
+			__NVIC_EnableIRQ(USART6_IRQn);
+		}
+		//Volvemos a activar las interrupciones globales
+		__enable_irq();
+	}
 }
 /*funcion para escribir un string*/
 void writeMsg(USART_Handler_t *ptrUsartHandler, char *msgToSend){
@@ -255,7 +277,7 @@ void writeMsg(USART_Handler_t *ptrUsartHandler, char *msgToSend){
 }
 
 /* funcion para escribir un solo char */
-int writeChar(USART_Handler_t *ptrUsartHandler, char dataToSend ){
+int writeChar(USART_Handler_t *ptrUsartHandler, char dataToSend){
 	while( !(ptrUsartHandler->ptrUSARTx->SR & USART_SR_TXE)){
 		__NOP();
 	}
@@ -263,6 +285,30 @@ int writeChar(USART_Handler_t *ptrUsartHandler, char dataToSend ){
 	ptrUsartHandler->ptrUSARTx->DR = dataToSend;
 
 	return dataToSend;
+}
+
+/*Funcion para enviar un dato con la interrupcion de TX*/
+int writeCharTX(USART_Handler_t *ptrUsartHandler, char dataToSend){
+	//Actiavmos las interrupciones de transmicion
+	ptrUsartHandler->ptrUSARTx->CR1 |= USART_CR1_TXEIE;
+	//Cargamos la variable de dataToSend en la variable global
+	dataSendTX = dataToSend;
+	//Le decimos al sistema que estamos en la funcion writeCharTX()
+	auxFun = 0;
+
+	return dataToSend;
+}
+
+/*Funcion para enviar un string*/
+void writeMsgTX(USART_Handler_t *ptrUsartHandler, char msgToSend[]){
+	//Cargamos el valor en la variable global
+//	auxArreglo = msgToSend;
+	//Activamos las interrupciones de transmicion
+	ptrUsartHandler->ptrUSARTx->CR1 |= USART_CR1_TXEIE;
+	//Le decimos al sistema que estamos en la funcion writeMsgTX()
+	auxFun = 1;
+	//Ponemos en cero el contador
+	contador = 0;
 }
 
 /*Lectura del caracter que llega por la interface serial*/
@@ -278,10 +324,13 @@ void USART1_IRQHandler(void){
 		auxRxData = (uint8_t) USART1->DR;
 		usart1Rx_Callback();
 	}
-//	//Evaluamos si la interrupcion que se dio es por TX
-//	else if(USART1->SR & USART_SR_TXE){
-//		usart1Tx_Callback();
-//	}
+	//Evaluamos si la interrupcion que se dio es por TX
+	else if(USART1->SR & USART_SR_TXE){
+		//Guardamos el mensaje a enviar en el DR
+		USART1->DR = dataSendTX;
+		//Bajar el registro de las interrupciones por transmicion
+		USART1->CR1 &= ~USART_CR1_TXEIE;
+	}
 }
 void USART2_IRQHandler(void){
 	//Evaluamos si la interrupcion que se dio es por RX
@@ -290,9 +339,22 @@ void USART2_IRQHandler(void){
 		usart2Rx_Callback();
 	}
 	//Evaluamos si la interrupcion que se dio es por TX
-//	else if(USART1->SR & USART_SR_TXE){
-//		usart2Tx_Callback();
-//	}
+	else if(USART2->SR & USART_SR_TXE){
+		if(auxFun == 0){
+			//Guardamos el mensaje a enviar en el DR
+			USART2->DR = dataSendTX;
+			//Bajar el registro de las interrupciones por transmicion
+			USART2->CR1 &= ~USART_CR1_TXEIE;
+		}else if(auxFun == 1){
+			if(auxArreglo[contador] == '\0'){
+				//Bajar el registro de las interrupciones por transmicion
+				USART2->CR1 &= ~USART_CR1_TXEIE;
+			}else if(auxArreglo[contador] != '\0'){
+				USART2->DR = auxArreglo[contador];
+				contador++;
+			}
+		}
+	}
 }
 void USART6_IRQHandler(void){
 	//Evaluamos si la interrupcion que se dio es por RX
@@ -300,10 +362,13 @@ void USART6_IRQHandler(void){
 		auxRxData = (uint8_t) USART6->DR;
 		usart6Rx_Callback();
 	}
-//	//Evaluamos si la interrupcion que se dio es por TX
-//	else if(USART1->SR & USART_SR_TXE){
-//		usart6Tx_Callback();
-//	}
+	//Evaluamos si la interrupcion que se dio es por TX
+	else if(USART6->SR & USART_SR_TXE){
+		//Guardamos el mensaje a enviar en el DR
+		USART6->DR = dataSendTX;
+		//Bajar el registro de las interrupciones por transmicion
+		USART6->CR1 &= ~USART_CR1_TXEIE;
+	}
 }
 
 /*Callback para la Recepcion*/
@@ -325,23 +390,3 @@ __attribute__((weak)) void usart6Rx_Callback(void){
 	 */
 	__NOP();
 }
-
-/*Callback para la transmicion*/
-//__attribute__((weak)) void usart1Tx_Callback(void){
-//	/*NOTE: esta funcion should not be modified, when the callback is needed,
-//	 * 		the BasicTimer_Callback could be implemented in the main file
-//	 */
-//	__NOP();
-//}
-//__attribute__((weak)) void usart2Tx_Callback(void){
-//	/*NOTE: esta funcion should not be modified, when the callback is needed,
-//	 * 		the BasicTimer_Callback could be implemented in the main file
-//	 */
-//	__NOP();
-//}
-//__attribute__((weak)) void usart6Tx_Callback(void){
-//	/*NOTE: esta funcion should not be modified, when the callback is needed,
-//	 * 		the BasicTimer_Callback could be implemented in the main file
-//	 */
-//	__NOP();
-//}
