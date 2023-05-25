@@ -115,95 +115,93 @@ int main(void){
 
 	/* Main Loop*/
 	while(1){
-		if(rxData != '\0'){
-			if(rxData == 'h'){
-				//Prueba con el USART2
-//				writeMsgTX(&handlerCommTerminal, "Hola mundo cruel\n");
-				//Prueba con el USART6
-				writeMsgTX(&handlerUSART6, "Hola mundo\n");
-				rxData = '\0';
-			}
-		}
-
-		//Hacemos un "eco" con el valor que nos llega por el serial
 //		if(rxData != '\0'){
-//			writeChar(&handlerCommTerminal, rxData);
-//
-//			if(rxData == 'w'){
-//				sprintf(bufferData, "WHO_AM_I? (r)\n");
-//				writeMsg(&handlerCommTerminal, bufferData);
-//
-//				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
-//				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
-//				writeMsg(&handlerCommTerminal, bufferData);
-//				rxData = '\0';
-//			}
-//			else if(rxData == 'p'){
-//				sprintf(bufferData, "PWR_MGMT_1 stat (r)\n");
-//				writeMsg(&handlerCommTerminal, bufferData);
-//
-//				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, PWR_MGMT_1);
-//				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
-//				writeMsg(&handlerCommTerminal, bufferData);
-//				rxData = '\0';
-//			}
-//			else if(rxData == 'r'){
-//				sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
-//				writeMsg(&handlerCommTerminal, bufferData);
-//
-//				i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
-//				rxData = '\0';
-//			}
-//			else if(rxData == 'r'){
-//				sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
-//				writeMsg(&handlerCommTerminal, bufferData);
-//
-//				i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
-//				rxData = '\0';
-//			}
-//			else if(rxData == 'x'){
-//				sprintf(bufferData, "Axis X data (r)\n");
-//				writeMsg(&handlerCommTerminal, bufferData);
-//
-//				uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
-//				uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
-//				int16_t AccelX = AccelX_high << 8 | AccelX_low;
-//				sprintf(bufferData, "AccelX = %d \n", (int) AccelX);
-//				writeMsg(&handlerCommTerminal, bufferData);
-//				rxData = '\0';
-//			}
-//			else if(rxData == 'y'){
-//				sprintf(bufferData, "Axis Y data (r)\n");
-//				writeMsg(&handlerCommTerminal, bufferData);
-//
-//				uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
-//				uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
-//				int16_t AccelY = AccelY_high << 8 | AccelY_low;
-//				sprintf(bufferData, "AccelY = %d \n", (int) AccelY);
-//				writeMsg(&handlerCommTerminal, bufferData);
-//				rxData = '\0';
-//			}
-//			else if(rxData == 'z'){
-//				sprintf(bufferData, "Axis Z data (r)\n");
-//				writeMsg(&handlerCommTerminal, bufferData);
-//
-//				uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
-//				uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
-//				int16_t AccelZ = AccelZ_high << 8 | AccelZ_low;
-//				sprintf(bufferData, "AccelZ = %d \n", (int) AccelZ);
-//				writeMsg(&handlerCommTerminal, bufferData);
-//				rxData = '\0';
-//			}
-//			else if(rxData == 'c'){
-//				freqMCU = getConfigPLL();
-//				sprintf(bufferData, "MCU Freq = %u \n", freqMCU);
-//				writeMsg(&handlerCommTerminal, bufferData);
-//				rxData = '\0';
-//			}
-//			else{
+//			if(rxData == 'h'){
+//				//Prueba con el USART6
+//				writeMsgTX(&handlerUSART6, "Hola mundo cruel\n");
 //				rxData = '\0';
 //			}
 //		}
+
+		//Hacemos un "eco" con el valor que nos llega por el serial
+		if(rxData != '\0'){
+			writeChar(&handlerCommTerminal, rxData);
+
+			if(rxData == 'w'){
+				sprintf(bufferData, "WHO_AM_I? (r)\n");
+				writeMsgTX(&handlerCommTerminal, bufferData);
+
+				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
+				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
+				writeMsgTX(&handlerCommTerminal, bufferData);
+				rxData = '\0';
+			}
+			else if(rxData == 'p'){
+				sprintf(bufferData, "PWR_MGMT_1 stat (r)\n");
+				writeMsgTX(&handlerCommTerminal, bufferData);
+
+				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, PWR_MGMT_1);
+				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
+				writeMsgTX(&handlerCommTerminal, bufferData);
+				rxData = '\0';
+			}
+			else if(rxData == 'r'){
+				sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
+				writeMsgTX(&handlerCommTerminal, bufferData);
+
+				i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
+				rxData = '\0';
+			}
+			else if(rxData == 'r'){
+				sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
+				writeMsgTX(&handlerCommTerminal, bufferData);
+
+				i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
+				rxData = '\0';
+			}
+			else if(rxData == 'x'){
+				sprintf(bufferData, "Axis X data (r)\n");
+				writeMsgTX(&handlerCommTerminal, bufferData);
+
+				uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
+				uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
+				int16_t AccelX = AccelX_high << 8 | AccelX_low;
+				sprintf(bufferData, "AccelX = %d \n", (int) AccelX);
+				writeMsgTX(&handlerCommTerminal, bufferData);
+				rxData = '\0';
+			}
+			else if(rxData == 'y'){
+				sprintf(bufferData, "Axis Y data (r)\n");
+				writeMsgTX(&handlerCommTerminal, bufferData);
+
+				uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
+				uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
+				int16_t AccelY = AccelY_high << 8 | AccelY_low;
+				sprintf(bufferData, "AccelY = %d \n", (int) AccelY);
+				writeMsgTX(&handlerCommTerminal, bufferData);
+				rxData = '\0';
+			}
+			else if(rxData == 'z'){
+				sprintf(bufferData, "Axis Z data (r)\n");
+				writeMsgTX(&handlerCommTerminal, bufferData);
+
+				uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
+				uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
+				int16_t AccelZ = AccelZ_high << 8 | AccelZ_low;
+				sprintf(bufferData, "AccelZ = %d \n", (int) AccelZ);
+				writeMsgTX(&handlerCommTerminal, bufferData);
+				rxData = '\0';
+			}
+			else if(rxData == 'c'){
+				freqMCU = getConfigPLL();
+				sprintf(bufferData, "MCU Freq = %u \n", freqMCU);
+				writeMsgTX(&handlerCommTerminal, bufferData);
+				rxData = '\0';
+			}
+			else{
+				rxData = '\0';
+			}
+		}
 	}
 	return 0;
 }
@@ -214,10 +212,8 @@ int main(void){
  * ================================================*/
 void initSystem(void){
 	/* ----Configuracion del Blinky Pin---- */
-//	BlinkyPin.pGPIOx											= GPIOH;
-//	BlinkyPin.GPIO_PinConfig.GPIO_PinNumber						= PIN_1;
-	BlinkyPin.pGPIOx											= GPIOA;
-	BlinkyPin.GPIO_PinConfig.GPIO_PinNumber						= PIN_5;
+	BlinkyPin.pGPIOx											= GPIOH;
+	BlinkyPin.GPIO_PinConfig.GPIO_PinNumber						= PIN_1;
 	BlinkyPin.GPIO_PinConfig.GPIO_PinMode						= GPIO_MODE_OUT;
 	BlinkyPin.GPIO_PinConfig.GPIO_PinOPType						= GPIO_OTYPER_PUSHPULL;
 	BlinkyPin.GPIO_PinConfig.GPIO_PinSpeed						= GPIO_OSPEED_HIGH;
@@ -229,8 +225,8 @@ void initSystem(void){
 	//Configuracion con la cual se maneja el timer
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_mode					= BTIMER_MODE_UP;
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_period				= 2500;
-//	handlerTimerBlinkyPin.TIMx_Config.TIMx_speed				= BTIMER_SPEED_100us;
-	handlerTimerBlinkyPin.TIMx_Config.TIMx_speed				= BTIMER_SPEED_100us_80MHz;
+	handlerTimerBlinkyPin.TIMx_Config.TIMx_speed				= BTIMER_SPEED_100us;
+//	handlerTimerBlinkyPin.TIMx_Config.TIMx_speed				= BTIMER_SPEED_100us_80MHz;
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_interruptEnable		= SET;
 	//Cargar la configuracion del Timer
 	BasicTimer_Config(&handlerTimerBlinkyPin);
@@ -239,74 +235,74 @@ void initSystem(void){
 	/*======
 	 *USART2
 	 *======*/
-//	//Configuracion para el pin de transmicion
-//	handlerPinTX.pGPIOx 										= GPIOA;
-//	handlerPinTX.GPIO_PinConfig.GPIO_PinNumber					= PIN_2;
-//	handlerPinTX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
-//	handlerPinTX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
-//	handlerPinTX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
-//	handlerPinTX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-//	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
-//	//Cargar la configuracion del pin
-//	GPIO_Config(&handlerPinTX);
-//	//configuracion del pin para la recepcion
-//	handlerPinRX.pGPIOx											= GPIOA;
-//	handlerPinRX.GPIO_PinConfig.GPIO_PinNumber					= PIN_3;
-//	handlerPinRX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
-//	handlerPinRX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
-//	handlerPinRX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
-//	handlerPinRX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-//	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
-//	//Cargar la configuracion del pin
-//	GPIO_Config(&handlerPinRX);
-//	//Configuracion del USART
-//	handlerCommTerminal.ptrUSARTx 								= USART2;
-//	handlerCommTerminal.USART_Config.USART_baudrate 			= USART_BAUDRATE_115200;
-//	handlerCommTerminal.USART_Config.USART_datasize				= USART_DATASIZE_8BIT;
-//	handlerCommTerminal.USART_Config.USART_parity				= USART_PARITY_NONE;
-//	handlerCommTerminal.USART_Config.USART_stopbits				= USART_STOPBIT_1;
-//	handlerCommTerminal.USART_Config.USART_mode					= USART_MODE_RXTX;
-//	handlerCommTerminal.USART_Config.USART_enableIntRX			= USART_RX_INTERRUP_ENABLE;
-//	handlerCommTerminal.USART_Config.USART_enableIntTX			= USART_TX_INTERRUP_ENABLE;
-//	handlerCommTerminal.USART_Config.USART_PLL_Enable			= PLL_DISABLE;
-//	//Cargar la configuracion del USART
-//	USART_Config(&handlerCommTerminal);
+	//Configuracion para el pin de transmicion
+	handlerPinTX.pGPIOx 										= GPIOA;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinNumber					= PIN_2;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
+	//Cargar la configuracion del pin
+	GPIO_Config(&handlerPinTX);
+	//configuracion del pin para la recepcion
+	handlerPinRX.pGPIOx											= GPIOA;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinNumber					= PIN_3;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
+	//Cargar la configuracion del pin
+	GPIO_Config(&handlerPinRX);
+	//Configuracion del USART
+	handlerCommTerminal.ptrUSARTx 								= USART2;
+	handlerCommTerminal.USART_Config.USART_baudrate 			= USART_BAUDRATE_115200;
+	handlerCommTerminal.USART_Config.USART_datasize				= USART_DATASIZE_8BIT;
+	handlerCommTerminal.USART_Config.USART_parity				= USART_PARITY_NONE;
+	handlerCommTerminal.USART_Config.USART_stopbits				= USART_STOPBIT_1;
+	handlerCommTerminal.USART_Config.USART_mode					= USART_MODE_RXTX;
+	handlerCommTerminal.USART_Config.USART_enableIntRX			= USART_RX_INTERRUP_ENABLE;
+	handlerCommTerminal.USART_Config.USART_enableIntTX			= USART_TX_INTERRUP_ENABLE;
+	handlerCommTerminal.USART_Config.USART_PLL_Enable			= PLL_DISABLE;
+	//Cargar la configuracion del USART
+	USART_Config(&handlerCommTerminal);
 
 	/*=====
 	 *USART6
 	 *=====*/
-	//Configuracion para el pin de transmicion
-	handlerPinUSART6_TX.pGPIOx 									= GPIOA;
-	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinNumber			= PIN_11;
-	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
-	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
-	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
-	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
-	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF8;
-	//Cargar la configuracion del pin
-	GPIO_Config(&handlerPinUSART6_TX);
-	//configuracion del pin para la recepcion
-	handlerPinUSART6_RX.pGPIOx									= GPIOA;
-	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinNumber			= PIN_12;
-	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
-	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
-	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
-	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
-	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF8;
-	//Cargar la configuracion del pin
-	GPIO_Config(&handlerPinUSART6_RX);
-	//Configuracion del USART
-	handlerUSART6.ptrUSARTx 									= USART6;
-	handlerUSART6.USART_Config.USART_baudrate 					= USART_BAUDRATE_115200;
-	handlerUSART6.USART_Config.USART_datasize					= USART_DATASIZE_8BIT;
-	handlerUSART6.USART_Config.USART_parity						= USART_PARITY_NONE;
-	handlerUSART6.USART_Config.USART_stopbits					= USART_STOPBIT_1;
-	handlerUSART6.USART_Config.USART_mode						= USART_MODE_RXTX;
-	handlerUSART6.USART_Config.USART_enableIntRX				= USART_RX_INTERRUP_ENABLE;
-	handlerUSART6.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_ENABLE;
-	handlerUSART6.USART_Config.USART_PLL_Enable					= PLL_ENABLE;
-	//Cargar la configuracion del USART
-	USART_Config(&handlerUSART6);
+//	//Configuracion para el pin de transmicion
+//	handlerPinUSART6_TX.pGPIOx 									= GPIOA;
+//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinNumber			= PIN_11;
+//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
+//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
+//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
+//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
+//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF8;
+//	//Cargar la configuracion del pin
+//	GPIO_Config(&handlerPinUSART6_TX);
+//	//configuracion del pin para la recepcion
+//	handlerPinUSART6_RX.pGPIOx									= GPIOA;
+//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinNumber			= PIN_12;
+//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
+//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
+//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
+//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
+//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF8;
+//	//Cargar la configuracion del pin
+//	GPIO_Config(&handlerPinUSART6_RX);
+//	//Configuracion del USART
+//	handlerUSART6.ptrUSARTx 									= USART6;
+//	handlerUSART6.USART_Config.USART_baudrate 					= USART_BAUDRATE_115200;
+//	handlerUSART6.USART_Config.USART_datasize					= USART_DATASIZE_8BIT;
+//	handlerUSART6.USART_Config.USART_parity						= USART_PARITY_NONE;
+//	handlerUSART6.USART_Config.USART_stopbits					= USART_STOPBIT_1;
+//	handlerUSART6.USART_Config.USART_mode						= USART_MODE_RXTX;
+//	handlerUSART6.USART_Config.USART_enableIntRX				= USART_RX_INTERRUP_ENABLE;
+//	handlerUSART6.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_ENABLE;
+//	handlerUSART6.USART_Config.USART_PLL_Enable					= PLL_ENABLE;
+//	//Cargar la configuracion del USART
+//	USART_Config(&handlerUSART6);
 
 	/*----Configuracion para el protocolo I2C para el Acelerometro----*/
 	//Configuracion de los pines para el I2C -> SCL
@@ -358,13 +354,13 @@ void initSystem(void){
 	i2c_Config(&handlerDisplayLcd);
 
 	/*----Configuracion del PLL----*/
-	//Se configura la velocidad del MCU para que este a 80 MHz
-	handlerPLL.PLL_PLLM											= 10;
-	handlerPLL.PLL_PLLN											= 100;
-	handlerPLL.PLL_PLLP											= PLLP_2;
-	handlerPLL.PLL_MCO1PRE										= PLL_MCO1PRE_4;
-	//Cargar la configuracion del PLL
-	ConfigPLL(&handlerPLL);
+//	//Se configura la velocidad del MCU para que este a 80 MHz
+//	handlerPLL.PLL_PLLM											= 10;
+//	handlerPLL.PLL_PLLN											= 100;
+//	handlerPLL.PLL_PLLP											= PLLP_2;
+//	handlerPLL.PLL_MCO1PRE										= PLL_MCO1PRE_4;
+//	//Cargar la configuracion del PLL
+//	ConfigPLL(&handlerPLL);
 
 	/*====Verificacion del PLL====*/
 	//Pin para verificar que si se configuro correctamente el PLL
