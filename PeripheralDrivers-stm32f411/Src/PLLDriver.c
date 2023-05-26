@@ -123,8 +123,8 @@ uint16_t getConfigPLL(void){
 
 	//PLLN
 	auxPLLN = (RCC->PLLCFGR >> RCC_PLLCFGR_PLLN_Pos);
-	//Aplicamos la mascara para obtener solo el valor del registro PLLN
-	auxPLLN &= (RCC_PLLCFGR_PLLN);
+//	//Aplicamos la mascara para obtener solo el valor del registro PLLN
+//	auxPLLN &= (RCC_PLLCFGR_PLLN);
 
 	//PLLP
 	auxPLLP = (RCC->PLLCFGR >> RCC_PLLCFGR_PLLP_Pos);
