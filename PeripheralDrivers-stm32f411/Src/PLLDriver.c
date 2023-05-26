@@ -88,10 +88,6 @@ void ConfigPLL(PLL_Config_t *pPLLHandler){
 	}
 	}
 
-	//Cambiamos el CPU clock source cambiamoando los SW bits
-	RCC->CFGR &= ~(RCC_CFGR_SW);
-	RCC->CFGR |= (RCC_CFGR_SW_1);
-
 	//Encender el PLL
 	RCC->CR |= RCC_CR_PLLON;
 
@@ -100,9 +96,9 @@ void ConfigPLL(PLL_Config_t *pPLLHandler){
 		__NOP();
 	}
 
-	//Activar el PLL para todo el MCU
-	RCC->CFGR &= ~RCC_CFGR_SW_1;
-	RCC->CFGR |= RCC_CFGR_SW_1;
+	//Se cambia el reloj para que sea el PLL
+	RCC->CFGR &= ~(RCC_CFGR_SW);
+	RCC->CFGR |= (RCC_CFGR_SW_1);
 }
 
 /*=====Funcion para entregar el estado de la configuracion del equipo=====*/

@@ -332,9 +332,6 @@ void USART1_IRQHandler(void){
 		if(auxFun == 0){
 			//Guardamos el mensaje a enviar en el DR
 			USART1->DR = dataSendTX;
-			while(!(USART1->SR & USART_SR_TC)){
-				__NOP();
-			}
 			//Bajar el registro de las interrupciones por transmision
 			USART1->CR1 &= ~USART_CR1_TXEIE;
 		}
@@ -367,9 +364,6 @@ void USART2_IRQHandler(void){
 		if(auxFun == 0){
 			//Guardamos el mensaje a enviar en el DR
 			USART2->DR = dataSendTX;
-			while(!(USART2->SR & USART_SR_TC)){
-				__NOP();
-			}
 			//Bajar el registro de las interrupciones por transmision
 			USART2->CR1 &= ~USART_CR1_TXEIE;
 		}
@@ -402,9 +396,6 @@ void USART6_IRQHandler(void){
 		if(auxFun == 0){
 			//Guardamos el mensaje a enviar en el DR
 			USART6->DR = dataSendTX;
-			while(!(USART6->SR & USART_SR_TC)){
-				__NOP();
-			}
 			//Bajar el registro de las interrupciones por transmision
 			USART6->CR1 &= ~USART_CR1_TXEIE;
 		}
