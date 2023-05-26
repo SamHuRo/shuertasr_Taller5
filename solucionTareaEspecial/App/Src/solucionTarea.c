@@ -69,6 +69,8 @@ GPIO_Handler_t SDAAccel = {0};
 GPIO_Handler_t SCLAccel = {0};
 I2C_Handler_t handlerAccelerometer = {0};
 uint8_t i2cBuffer = 0;
+BasicTimer_Handler_t timerAccel = {0};
+
 //Display LCD
 GPIO_Handler_t SDADisplayLcd = {0};
 GPIO_Handler_t SCLDisplayLcd = {0};
@@ -362,16 +364,15 @@ void initSystem(void){
 //	//Cargar la configuracion del PLL
 //	ConfigPLL(&handlerPLL);
 
-	/*====Verificacion del PLL====*/
-	//Pin para verificar que si se configuro correctamente el PLL
-//	pinVerificacionPLL.pGPIOx									= GPIOA;
-//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinNumber			= PIN_8;
-//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
-//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_OPENDRAIN;
-//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
-//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinSpeed				= GPIO_OSPEED_FAST;
-//	pinVerificacionPLL.GPIO_PinConfig.GPIO_PinAltFunMode		= AF0;
-//	GPIO_Config(&pinVerificacionPLL);
+	/*====Configuracion del timer para el muestreo del Accel====*/
+	timerAccel.ptrTIMx											= TIM5;
+	timerAccel.TIMx_Config.TIMx_mode							= BTIMER_MODE_UP;
+	timerAccel.TIMx_Config.TIMx_period							= 1000;
+	timerAccel.TIMx_Config.TIMx_speed							= BTIMER_SPEED_100us;
+//	timerAccel.TIMx_Config.TIMx_speed							= BTIMER_SPEED_100us_80MHz;
+	timerAccel.TIMx_Config.TIMx_interruptEnable					= SET;
+	BasicTimer_Config(&timerAccel);
+
 }
 
 /*Funcion del timer*/
