@@ -33,10 +33,18 @@ BasicTimer_Handler_t handlerTimerBlinkyPin = {0};
 /*========================
  * Configuracion del PWM
  * ======================*/
+//Pines
 GPIO_Handler_t Pwm1 = {0};
 GPIO_Handler_t Pwm2 = {0};
 GPIO_Handler_t Pwm3 = {0};
+//Handler del PWM
 PWM_Handler_t handlerPwm1 = {0};
+PWM_Handler_t handlerPwm2 = {0};
+PWM_Handler_t handlerPwm3 = {0};
+//Dutty cicle
+uint16_t duttyValue1 = 0;
+uint16_t duttyValue2 = 0;
+uint16_t duttyValue3 = 0;
 
 /*==============================
  * Configuracion del USART
@@ -52,7 +60,7 @@ GPIO_Handler_t handlerPinUSART6_RX = {0};
 USART_Handler_t handlerUSART6 = {0};
 
 uint8_t rxData = 0;
-char bufferData[24] = "accel MPU-6050 testing..";
+char bufferData[24] = "Solucion Tarea..";
 
 /*==========================
  * Configuracion del SysTick
@@ -106,6 +114,7 @@ uint16_t var = 0;
  * el tamaño de cada uno de los arreglos debe de ser de 1000 datos, cada uno de 16 bits.*/
 uint8_t arregloEjeX_low[1000];
 uint8_t arregloEjeX_high[1000];
+uint16_t arregloEjeX[1000];
 uint8_t arregloEjeY_low[1000];
 uint8_t arregloEjeY_high[1000];
 uint8_t arregloEjeZ_low[1000];
@@ -114,6 +123,8 @@ uint8_t arregloEjeZ_high[1000];
 uint32_t promEjeX = 0;
 uint32_t promEjeY = 0;
 uint32_t promEjeZ = 0;
+//Variable para empezar a realizar el muestreo
+uint8_t startMuestreo = 0;
 
 
 
@@ -122,6 +133,7 @@ uint32_t promEjeZ = 0;
  * Cabeceras de las funciones
  * ==========================*/
 void initSystem(void);
+void muestreoAccel(void);
 
 /*=====================
  * 		MAIN
@@ -132,91 +144,84 @@ int main(void){
 
 	//Llamammos la funcion para inicializar el MPU
 	initSystem();
-
+	//Imprimimos mensaje de inicio
 	writeMsgTX(&handlerUSART6, bufferData);
 	/* Main Loop*/
 	while(1){
+		muestreoAccel();
 		//Hacemos un "eco" con el valor que nos llega por el serial
 		if(rxData != '\0'){
 			writeCharTX(&handlerUSART6, rxData);
 
 			if(rxData == 'w'){
 				sprintf(bufferData, "WHO_AM_I? (r)\n");
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 
 				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
 				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 				rxData = '\0';
 			}
 			else if(rxData == 'p'){
 				sprintf(bufferData, "PWR_MGMT_1 stat (r)\n");
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 
 				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, PWR_MGMT_1);
 				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 				rxData = '\0';
 			}
 			else if(rxData == 'r'){
 				sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 
 				i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
 				rxData = '\0';
 			}
 			else if(rxData == 'x'){
 				sprintf(bufferData, "Axis X data (r)\n");
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 
 				uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
 				uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
 				int16_t AccelX = AccelX_high << 8 | AccelX_low;
 				float Accelx_Value = AccelX * 4 / 32767;
 				sprintf(bufferData, "AccelX = %.3f m/s2\n", Accelx_Value);
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 				rxData = '\0';
 			}
 			else if(rxData == 'y'){
 				sprintf(bufferData, "Axis Y data (r)\n");
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 
 				uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
 				uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
 				int16_t AccelY = AccelY_high << 8 | AccelY_low;
 				float Accely_Value = AccelY * 4 / 32767;
 				sprintf(bufferData, "AccelY = %.3f m/s2\n", Accely_Value);
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 				rxData = '\0';
 			}
 			else if(rxData == 'z'){
 				sprintf(bufferData, "Axis Z data (r)\n");
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 
 				uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
 				uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
 				int16_t AccelZ = AccelZ_high << 8 | AccelZ_low;
 				float Accelz_Value = AccelZ * 4 / 32767;
 				sprintf(bufferData, "AccelZ = %.3f m/s2\n", Accelz_Value);
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 				rxData = '\0';
 			}
 			else if(rxData == 's'){
 				//Queremos leer la configuracion que tiene el acelerometro
 				sprintf(bufferData, "AFS_SEL ? (r)\n");
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
 
 				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, 28);
 				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
-				writeMsgTX(&handlerCommTerminal, bufferData);
-				rxData = '\0';
-			}
-			else if(rxData == 'c'){
-				//Queremos cambiar el rango del acelerometro
-				sprintf(bufferData, "AFS_SEL change (w)\n");
-				writeMsgTX(&handlerCommTerminal, bufferData);
-
-				i2c_writeSingleRegister(&handlerAccelerometer, 28, 0x8);
+				writeMsgTX(&handlerUSART6, bufferData);
 				rxData = '\0';
 			}
 			else if(rxData == 'h'){
@@ -227,7 +232,52 @@ int main(void){
 			else if(rxData == 'q'){
 				freqMCU = getConfigPLL();
 				sprintf(bufferData, "Freq MCU = %i MHz \n", (unsigned int) freqMCU);
-				writeMsgTX(&handlerCommTerminal, bufferData);
+				writeMsgTX(&handlerUSART6, bufferData);
+				rxData = '\0';
+			}
+			else if(rxData == 'a'){
+				//Aceleracion en x
+				uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
+				uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
+				int16_t AccelX = AccelX_high << 8 | AccelX_low;
+				//Aceleracion en z
+				uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
+				uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
+				int16_t AccelZ = AccelZ_high << 8 | AccelZ_low;
+				//Angulo en el eje y
+				float angY = atan(AccelX/sqrt(pow(AccelX,2) + pow(AccelZ,2))) * (180.0/3.14);
+				sprintf(bufferData, "Ang Y = %2.f \n", angY);
+				writeMsgTX(&handlerUSART6, bufferData);
+				rxData = '\0';
+			}
+			else if(rxData == 'b'){
+				//Aceleracion en x
+				uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
+				uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
+				int16_t AccelX = AccelX_high << 8 | AccelX_low;
+				//Aceleracion en z
+				uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
+				uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
+				int16_t AccelY = AccelY_high << 8 | AccelY_low;
+				//Angulo en el eje y
+				float angZ = atan(AccelX/sqrt(pow(AccelX,2) + pow(AccelY,2))) * (180.0/3.14);
+				sprintf(bufferData, "Ang Z = %2.f \n", angZ);
+				writeMsgTX(&handlerUSART6, bufferData);
+				rxData = '\0';
+			}
+			else if(rxData == 'c'){
+				//Aceleracion en x
+				uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
+				uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
+				int16_t AccelY = AccelY_high << 8 | AccelY_low;
+				//Aceleracion en z
+				uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
+				uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
+				int16_t AccelZ = AccelZ_high << 8 | AccelZ_low;
+				//Angulo en el eje y
+				float angX = atan(AccelY/sqrt(pow(AccelY,2) + pow(AccelZ,2))) * (180.0/3.14);
+				sprintf(bufferData, "Ang X = %2.f \n", angX);
+				writeMsgTX(&handlerUSART6, bufferData);
 				rxData = '\0';
 			}
 			else{
@@ -358,7 +408,7 @@ void initSystem(void){
 	//Cargar la configuracion del PLL
 	ConfigPLL(&handlerPLL);
 
-	/*====Configuracion del timer para el muestreo del Accel====*/
+	/*----Configuracion del timer para el muestreo del Accel----*/
 	timerAccel.ptrTIMx											= TIM5;
 	timerAccel.TIMx_Config.TIMx_mode							= BTIMER_MODE_UP;
 	timerAccel.TIMx_Config.TIMx_period							= 1000;
@@ -367,16 +417,101 @@ void initSystem(void){
 	BasicTimer_Config(&timerAccel);
 
 	/*----Configuracion del PWM----*/
+	//Primer pwm
+	Pwm1.pGPIOx 												= GPIOB;
+	Pwm1.GPIO_PinConfig.GPIO_PinNumber							= PIN_1;
+	Pwm1.GPIO_PinConfig.GPIO_PinMode							= GPIO_MODE_ALTFN;
+	Pwm1.GPIO_PinConfig.GPIO_PinOPType							= GPIO_OTYPER_PUSHPULL;
+	Pwm1.GPIO_PinConfig.GPIO_PinPuPdControl						= GPIO_PUPDR_NOTHING;
+	Pwm1.GPIO_PinConfig.GPIO_PinSpeed							= GPIO_OSPEED_FAST;
+	Pwm1.GPIO_PinConfig.GPIO_PinAltFunMode						= AF2;
+	//Cargamos la configuracion
+	GPIO_Config(&Pwm1);
+	//Configuramos el Timer para la señal PWM
+	handlerPwm1.ptrTIMx											= TIM3;
+	handlerPwm1.config.channel									= PWM_CHANNEL_4;
+	handlerPwm1.config.duttyCicle								= duttyValue1;
+	handlerPwm1.config.periodo									= 20000;
+	handlerPwm1.config.prescaler								= 16;
+	//Cargamos la configuracion
+	pwm_Config(&handlerPwm1);
+	//Activamos la señal
+	enableOutput(&handlerPwm1);
+	startPwmSignal(&handlerPwm1);
 
+	//Segundo pwm
+	Pwm2.pGPIOx 												= GPIOB;
+	Pwm2.GPIO_PinConfig.GPIO_PinNumber							= PIN_4;
+	Pwm2.GPIO_PinConfig.GPIO_PinMode							= GPIO_MODE_ALTFN;
+	Pwm2.GPIO_PinConfig.GPIO_PinOPType							= GPIO_OTYPER_PUSHPULL;
+	Pwm2.GPIO_PinConfig.GPIO_PinPuPdControl						= GPIO_PUPDR_NOTHING;
+	Pwm2.GPIO_PinConfig.GPIO_PinSpeed							= GPIO_OSPEED_FAST;
+	Pwm2.GPIO_PinConfig.GPIO_PinAltFunMode						= AF2;
+	//Cargamos la configuracion
+	GPIO_Config(&Pwm2);
+	//Configuramos el Timer para la señal PWM
+	handlerPwm2.ptrTIMx											= TIM3;
+	handlerPwm2.config.channel									= PWM_CHANNEL_1;
+	handlerPwm2.config.duttyCicle								= duttyValue2;
+	handlerPwm2.config.periodo									= 20000;
+	handlerPwm2.config.prescaler								= 16;
+	//Cargamos la configuracion
+	pwm_Config(&handlerPwm2);
+	//Activamos la señal
+	enableOutput(&handlerPwm2);
+	startPwmSignal(&handlerPwm2);
+
+	//Tercer pwm
+	Pwm3.pGPIOx 												= GPIOB;
+	Pwm3.GPIO_PinConfig.GPIO_PinNumber							= PIN_5;
+	Pwm3.GPIO_PinConfig.GPIO_PinMode							= GPIO_MODE_ALTFN;
+	Pwm3.GPIO_PinConfig.GPIO_PinOPType							= GPIO_OTYPER_PUSHPULL;
+	Pwm3.GPIO_PinConfig.GPIO_PinPuPdControl						= GPIO_PUPDR_NOTHING;
+	Pwm3.GPIO_PinConfig.GPIO_PinSpeed							= GPIO_OSPEED_FAST;
+	Pwm3.GPIO_PinConfig.GPIO_PinAltFunMode						= AF2;
+	//Cargamos la configuracion
+	GPIO_Config(&Pwm3);
+	//Configuramos el Timer para la señal PWM
+	handlerPwm3.ptrTIMx											= TIM3;
+	handlerPwm3.config.channel									= PWM_CHANNEL_2;
+	handlerPwm3.config.duttyCicle								= duttyValue3;
+	handlerPwm3.config.periodo									= 20000;
+	handlerPwm3.config.prescaler								= 16;
+	//Cargamos la configuracion
+	pwm_Config(&handlerPwm3);
+	//Activamos la señal
+	enableOutput(&handlerPwm3);
+	startPwmSignal(&handlerPwm3);
 }
 
-/*Funcion del timer*/
+/*Funcion callback del timer para led de estado*/
 void BasicTimer2_Callback(void){
 	//Hacemos el blinky, para indicar que el equipo esta funcionando correctamente.
 	GPIO_TooglePin(&BlinkyPin);
 }
-
+/*Funcion callback del timer para el muestreo de los datos del acelerometro*/
+void BasicTimer5_Callback(void){
+	startMuestreo ^= 1; //Cambiamos el valor de la variable startMuestreo
+}
 /*Funcion callback del usart*/
 void usart6Rx_Callback(void){
+	//Almacenamos el dato que se envio  en la variable rxData
 	rxData = getRxData();
+}
+/*Funcion encargada de realizar el muestreo del Accel*/
+void muestreoAccel(void){
+	uint16_t i = 0;
+	switch(startMuestreo){
+	case 0:
+		while(startMuestreo == 0){
+			arregloEjeX[i] = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L) << 8 | i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
+			i++;
+		}
+	case 1:
+		while(startMuestreo == 1){
+			arregloEjeX[i] = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L) << 8 | i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
+			i++;
+		}
+	}
+
 }
