@@ -117,14 +117,6 @@ int main(void){
 
 	/* Main Loop*/
 	while(1){
-//		if(rxData != '\0'){
-//			if(rxData == 'h'){
-//				//Prueba con el USART6
-//				writeMsgTX(&handlerUSART6, "Hola mundo cruel\n");
-//				rxData = '\0';
-//			}
-//		}
-
 		//Hacemos un "eco" con el valor que nos llega por el serial
 		if(rxData != '\0'){
 			writeChar(&handlerCommTerminal, rxData);
@@ -196,8 +188,13 @@ int main(void){
 			}
 			else if(rxData == 'c'){
 				freqMCU = getConfigPLL();
-				sprintf(bufferData, "MCU Freq = %u \n", freqMCU);
+				sprintf(bufferData, "MCU Freq = %u MHz\n", freqMCU);
 				writeMsgTX(&handlerCommTerminal, bufferData);
+				rxData = '\0';
+			}
+			else if(rxData == 'h'){
+				//Prueba con el USART6
+				writeMsgTX(&handlerUSART6, "Hola mundo cruel\n");
 				rxData = '\0';
 			}
 			else{
@@ -273,38 +270,38 @@ void initSystem(void){
 	/*=====
 	 *USART6
 	 *=====*/
-//	//Configuracion para el pin de transmicion
-//	handlerPinUSART6_TX.pGPIOx 									= GPIOA;
-//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinNumber			= PIN_11;
-//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
-//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
-//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
-//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
-//	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF8;
-//	//Cargar la configuracion del pin
-//	GPIO_Config(&handlerPinUSART6_TX);
-//	//configuracion del pin para la recepcion
-//	handlerPinUSART6_RX.pGPIOx									= GPIOA;
-//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinNumber			= PIN_12;
-//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
-//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
-//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
-//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
-//	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF8;
-//	//Cargar la configuracion del pin
-//	GPIO_Config(&handlerPinUSART6_RX);
-//	//Configuracion del USART
-//	handlerUSART6.ptrUSARTx 									= USART6;
-//	handlerUSART6.USART_Config.USART_baudrate 					= USART_BAUDRATE_115200;
-//	handlerUSART6.USART_Config.USART_datasize					= USART_DATASIZE_8BIT;
-//	handlerUSART6.USART_Config.USART_parity						= USART_PARITY_NONE;
-//	handlerUSART6.USART_Config.USART_stopbits					= USART_STOPBIT_1;
-//	handlerUSART6.USART_Config.USART_mode						= USART_MODE_RXTX;
-//	handlerUSART6.USART_Config.USART_enableIntRX				= USART_RX_INTERRUP_ENABLE;
-//	handlerUSART6.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_ENABLE;
-//	handlerUSART6.USART_Config.USART_PLL_Enable					= PLL_ENABLE;
-//	//Cargar la configuracion del USART
-//	USART_Config(&handlerUSART6);
+	//Configuracion para el pin de transmicion
+	handlerPinUSART6_TX.pGPIOx 									= GPIOC;
+	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinNumber			= PIN_6;
+	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
+	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
+	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
+	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
+	handlerPinUSART6_TX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF8;
+	//Cargar la configuracion del pin
+	GPIO_Config(&handlerPinUSART6_TX);
+	//configuracion del pin para la recepcion
+	handlerPinUSART6_RX.pGPIOx									= GPIOC;
+	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinNumber			= PIN_7;
+	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinMode				= GPIO_MODE_ALTFN;
+	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
+	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_NOTHING;
+	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_FAST;
+	handlerPinUSART6_RX.GPIO_PinConfig.GPIO_PinAltFunMode		= AF8;
+	//Cargar la configuracion del pin
+	GPIO_Config(&handlerPinUSART6_RX);
+	//Configuracion del USART
+	handlerUSART6.ptrUSARTx 									= USART6;
+	handlerUSART6.USART_Config.USART_baudrate 					= USART_BAUDRATE_115200;
+	handlerUSART6.USART_Config.USART_datasize					= USART_DATASIZE_8BIT;
+	handlerUSART6.USART_Config.USART_parity						= USART_PARITY_NONE;
+	handlerUSART6.USART_Config.USART_stopbits					= USART_STOPBIT_1;
+	handlerUSART6.USART_Config.USART_mode						= USART_MODE_RXTX;
+	handlerUSART6.USART_Config.USART_enableIntRX				= USART_RX_INTERRUP_ENABLE;
+	handlerUSART6.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_ENABLE;
+	handlerUSART6.USART_Config.USART_PLL_Enable					= PLL_DISABLE;
+	//Cargar la configuracion del USART
+	USART_Config(&handlerUSART6);
 
 	/*----Configuracion para el protocolo I2C para el Acelerometro----*/
 	//Configuracion de los pines para el I2C -> SCL
