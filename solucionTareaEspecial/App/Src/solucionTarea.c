@@ -43,7 +43,7 @@ PWM_Handler_t handlerPwm1 = {0};
 PWM_Handler_t handlerPwm2 = {0};
 PWM_Handler_t handlerPwm3 = {0};
 //Dutty cicle
-uint16_t duttyValue = 0;
+uint16_t duttyValue = 1500;
 
 /*==============================
  * Configuracion del USART
@@ -126,6 +126,7 @@ uint8_t mensajeEnviado = 0;
 void initSystem(void);
 void muestreoAccel(void);
 void tecladoAccel(void);
+void conversionPWM(void);
 
 /*=====================
  * 		MAIN
@@ -137,12 +138,15 @@ int main(void){
 	initSystem();
 	//Primer mensaje de que esta funcionando
 	writeMsgTX(&handlerUSART6, bufferData);
+
 	/* Main Loop*/
 	while(1){
 		//Esta es la funcion en la cual se esta la comunicacion serial con el PC
 		tecladoAccel();
 		//Funcion para realizar el muestreo del acelerometro a 1 KHz
 		muestreoAccel();
+		//Funcion encargada de realizar el cambio en los PWM, teniendo en cuenta los valores que se recolectan del acelerometro
+		conversionPWM();
 	}
 	return 0;
 }
@@ -495,4 +499,8 @@ void tecladoAccel(void){
 			rxData = '\0';
 		}
 	}
+}
+
+void conversionPWM(void){
+
 }
