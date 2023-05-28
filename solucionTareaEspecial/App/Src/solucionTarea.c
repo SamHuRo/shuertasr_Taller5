@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "BasicTimer.h"
+#include "DisplayLCDDriver.h"
 #include "ExtiDriver.h"
 #include "GPIOxDriver.h"
 #include "I2CDriver.h"
@@ -98,9 +99,9 @@ uint16_t var = 0;
  *===============================*/
 /*Arreglo para guardar la infomracion que se obtiene del acelerometro, como la frecuencia de muestreo va a ser de 1 KHz, y la toma de datos se realiza en un 1 Hz,
  * el tamaño de cada uno de los arreglos debe de ser de 2000 datos, cada uno de 16 bits.*/
-int16_t arregloEjeX[2000];
-int16_t arregloEjeY[2000];
-int16_t arregloEjeZ[2000];
+float arregloEjeX[2000];
+float arregloEjeY[2000];
+float arregloEjeZ[2000];
 //Variable para empezar a realizar el muestreo
 uint8_t startMuestreo = 0;
 //Variable para comenzar la captura de datos en dos segundos
@@ -110,9 +111,11 @@ uint8_t muestreoListo = 3;
 //Contador, esta variable nos va a ayudar a contar los dos segundos que se necesitan para la captura de los datos
 uint32_t tiempo = 0;
 //Contador para ir guardando los datos en los arreglos
-uint32_t i = 0;
+uint16_t i = 0;
 //Mensaje para mostrar que la captura esta lista
 char mensaje[50] = "Listo captura";
+//Varaible que nos ayuda a almacenar los datos
+uint16_t j = 0;
 
 
 /*=========================
@@ -256,6 +259,8 @@ void initSystem(void){
 	//Configuracion de la cominicacion I2C
 	handlerDisplayLcd.ptrI2Cx									= I2C2;
 	handlerDisplayLcd.modeI2C									= I2C_MODE_FM;
+	handlerDisplayLcd.slaveAddress								= ADDRES_LCD;
+	handlerDisplayLcd.PLL_ON									= PLL_ENABLE;
 	i2c_Config(&handlerDisplayLcd);
 
 	/*----Configuracion del PLL----*/
@@ -364,13 +369,13 @@ void muestreoAccel(void){
 	if(startMuestreo == 1){
 		uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
 		uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
-		int16_t muestreoEjeX =  (AccelX_high << 8 | AccelX_low);
+		float muestreoEjeX =  ((AccelX_high << 8 | AccelX_low)/2560000.f) * 9.78;
 		uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
 		uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
-		int16_t muestreoEjeY = (AccelY_high << 8 | AccelY_low);
+		float muestreoEjeY = ((AccelY_high << 8 | AccelY_low)/327680.f) * 9.78 + 8.02;
 		uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
 		uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
-		int16_t muestreoEjeZ = (AccelZ_high << 8 | AccelZ_low);
+		float muestreoEjeZ = ((AccelZ_high << 8 | AccelZ_low)/3276800.f) * 9.78 ;
 		startMuestreo = 0;
 		/*Se espera hasta que el usuario hunda la tecla 'c' para poder comenzar la captura de los datos del
 		 * acelerometro y guardarlos en los arreglos correspondientes a cada uno de los ejes.*/
@@ -384,12 +389,10 @@ void muestreoAccel(void){
 				arregloEjeZ[i] = muestreoEjeZ;
 				//Se aumenta la posicion en el arreglo para guardar el dato en dicha posicion
 				i++;
-			}else if(tiempo > 9){
-				//La captura de datos se ha completado y se imprime un mensaje de completado
-				muestreoListo = 1;
 			}else{
 				/*Una vez completada la captira de los datos se baja la bandera y se levanta la bandera de que
 				 *  el muestreo esta completo*/
+				muestreoListo = 1;
 				capturarDatos = 0;
 			}
 		}
@@ -402,7 +405,7 @@ void muestreoAccel(void){
 void tecladoAccel(void){
 	if(rxData != '\0'){
 		if(rxData == 'w'){
-			sprintf(bufferData, "WHO_AM_I? (r)\n");
+//			sprintf(bufferData, "WHO_AM_I? (r)\n");
 			writeMsgTX(&handlerUSART6, bufferData);
 
 			i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
@@ -457,7 +460,7 @@ void tecladoAccel(void){
 			uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
 			uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
 			int16_t AccelZ = AccelZ_high << 8 | AccelZ_low;
-			float AccelZ_Value = (AccelZ/2560.f) * 9.78 + 12.01;
+			float AccelZ_Value = (AccelZ/2560.f) * 9.78 + 14.45;
 			sprintf(bufferData, "AccelZ = %.2f m/s2\n", AccelZ_Value);
 			writeMsgTX(&handlerUSART6, bufferData);
 			rxData = '\0';
@@ -473,6 +476,14 @@ void tecladoAccel(void){
 			muestreoListo = 0;
 			tiempo = 0;
 			i = 0;
+			rxData = '\0';
+		}else if(rxData == 'd'){
+			j = 0;
+			while(j < 2001){
+				sprintf(bufferData, "(%.2f; %.2f; %.2f) m/s2 # %i \n", arregloEjeX[j], arregloEjeY[j], arregloEjeZ[j], j);
+				writeMsgTX(&handlerUSART6, bufferData);
+				j++;
+			}
 			rxData = '\0';
 		}
 		else{

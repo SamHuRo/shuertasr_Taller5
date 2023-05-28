@@ -404,9 +404,6 @@ void USART6_IRQHandler(void){
 			if(auxArreglo[tx_index] != '\0'){
 				if(tx_index < tx_length){
 					USART6->DR = auxArreglo[tx_index];
-					while(!(USART6->SR & USART_SR_TC)){
-						__NOP();
-					}
 					tx_index++;
 				}
 			}else if(auxArreglo[tx_index] == '\0'){
