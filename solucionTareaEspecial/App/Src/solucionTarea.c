@@ -116,6 +116,8 @@ uint16_t i = 0;
 char mensaje[50] = "Listo captura";
 //Varaible que nos ayuda a almacenar los datos
 uint16_t j = 0;
+//Bandera para saber cuando se ha enviado un mensaje
+uint8_t mensajeEnviado = 0;
 
 
 /*=========================
@@ -141,11 +143,6 @@ int main(void){
 		tecladoAccel();
 		//Funcion para realizar el muestreo del acelerometro a 1 KHz
 		muestreoAccel();
-		//Condicional para verificar si el muestreo se realizo
-		if(muestreoListo == 1){
-			writeMsgTX(&handlerUSART6, mensaje);
-			muestreoListo = 0;
-		}
 	}
 	return 0;
 }
@@ -365,7 +362,7 @@ void usart6Rx_Callback(void){
 	rxData = getRxData();
 }
 void usart6Tx_Callback(void){
-	mensajeEnviado = 1;
+	mensajeEnviado ^= 1;
 }
 /*Funcion para realizar el muestreo*/
 void muestreoAccel(void){
@@ -402,6 +399,11 @@ void muestreoAccel(void){
 		if(tiempo > 1000){
 			tiempo = 0;
 		}
+	}
+	//Condicional para verificar si el muestreo se realizo
+	if(muestreoListo == 1){
+		writeMsg(&handlerUSART6, mensaje);
+		muestreoListo = 0;
 	}
 }
 /*Funcion que guarda las interacciones del acelerometro con el teclado*/
