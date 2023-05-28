@@ -445,7 +445,7 @@ void tecladoAccel(void){
 			uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
 			uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
 			int16_t AccelX = AccelX_high << 8 | AccelX_low;
-			float AccelX_Value = (AccelX/2560000.f) * 9.78;
+			float AccelX_Value = (AccelX/16384.f) * 9.78;
 			sprintf(bufferData, "AccelX = %.2f m/s2\n", AccelX_Value);
 			writeMsgTX(&handlerUSART6, bufferData);
 			rxData = '\0';
@@ -493,6 +493,18 @@ void tecladoAccel(void){
 				writeMsg(&handlerUSART6, bufferData);
 				j++;
 			}
+			rxData = '\0';
+		}
+		else if(rxData == 'a'){
+			uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
+			uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
+			int16_t AccelX = AccelX_high << 8 | AccelX_low;
+			uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
+			uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
+			int16_t AccelY = AccelY_high << 8 | AccelY_low;
+			float ang_x = atan(AccelX/sqrt(pow(AccelX,2) + pow(AccelY,2)))*(180.0/3.14);
+			sprintf(bufferData, "AngX = %.2f \n", ang_x);
+			writeMsgTX(&handlerUSART6, bufferData);
 			rxData = '\0';
 		}
 		else{
