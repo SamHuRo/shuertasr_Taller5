@@ -118,6 +118,10 @@ char mensaje[50] = "Listo captura";
 uint16_t j = 0;
 //Bandera para saber cuando se ha enviado un mensaje
 uint8_t mensajeEnviado = 0;
+//Variables para guardar la actualizacion del dutty
+uint32_t newDutty1 = 0;
+uint32_t newDutty2 = 0;
+uint32_t newDutty3 = 0;
 
 
 /*=========================
@@ -126,7 +130,6 @@ uint8_t mensajeEnviado = 0;
 void initSystem(void);
 void muestreoAccel(void);
 void tecladoAccel(void);
-void conversionPWM(void);
 
 /*=====================
  * 		MAIN
@@ -145,8 +148,6 @@ int main(void){
 		tecladoAccel();
 		//Funcion para realizar el muestreo del acelerometro a 1 KHz
 		muestreoAccel();
-		//Funcion encargada de realizar el cambio en los PWM, teniendo en cuenta los valores que se recolectan del acelerometro
-		conversionPWM();
 	}
 	return 0;
 }
@@ -409,6 +410,15 @@ void muestreoAccel(void){
 		writeMsg(&handlerUSART6, mensaje);
 		muestreoListo = 0;
 	}
+	//Con los datos obtenidos en el muestreo se van a realizar las variaciones en el dutty de cada uno de los pwm
+	nuevoDutty1 = muestreoEjeX * 10;
+	nuevoDutty2 = muestreoEjeY * 10;
+	nuevoDutty3 = muestreoEjeZ * 10;
+	//Cargamos el nuevo dutty a si respectivo PWM
+	updateDuttyCycle(&handlerPwm1, nuevoDutty1);
+	updateDuttyCycle(&handlerPwm2, nuevoDutty2);
+	updateDuttyCycle(&handlerPwm3, nuevoDutty3);
+
 }
 /*Funcion que guarda las interacciones del acelerometro con el teclado*/
 void tecladoAccel(void){
@@ -513,6 +523,3 @@ void tecladoAccel(void){
 	}
 }
 
-void conversionPWM(void){
-
-}
