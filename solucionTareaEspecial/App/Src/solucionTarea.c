@@ -59,7 +59,7 @@ GPIO_Handler_t handlerPinUSART6_RX = {0};
 USART_Handler_t handlerUSART6 = {0};
 
 uint8_t rxData = 0;
-char bufferData[100] = "Solucion...";
+char bufferData[100] = "Solucion Tarea...\n";
 
 /*==========================
  * Configuracion del SysTick
@@ -364,6 +364,9 @@ void usart6Rx_Callback(void){
 	//Almacenamos el dato que se envio  en la variable rxData
 	rxData = getRxData();
 }
+void usart6Tx_Callback(void){
+	mensajeEnviado = 1;
+}
 /*Funcion para realizar el muestreo*/
 void muestreoAccel(void){
 	if(startMuestreo == 1){
@@ -405,7 +408,7 @@ void muestreoAccel(void){
 void tecladoAccel(void){
 	if(rxData != '\0'){
 		if(rxData == 'w'){
-//			sprintf(bufferData, "WHO_AM_I? (r)\n");
+			sprintf(bufferData, "WHO_AM_I? (r)\n");
 			writeMsgTX(&handlerUSART6, bufferData);
 
 			i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
@@ -481,7 +484,7 @@ void tecladoAccel(void){
 			j = 0;
 			while(j < 2001){
 				sprintf(bufferData, "(%.2f; %.2f; %.2f) m/s2 # %i \n", arregloEjeX[j], arregloEjeY[j], arregloEjeZ[j], j);
-				writeMsgTX(&handlerUSART6, bufferData);
+				writeMsg(&handlerUSART6, bufferData);
 				j++;
 			}
 			rxData = '\0';

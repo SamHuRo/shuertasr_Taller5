@@ -409,6 +409,7 @@ void USART6_IRQHandler(void){
 			}else if(auxArreglo[tx_index] == '\0'){
 				//Bajar el registro de las interrupciones por transmision
 				USART6->CR1 &= ~USART_CR1_TXEIE;
+				usart6Tx_Callback();
 			}
 		}
 	}
@@ -428,6 +429,12 @@ __attribute__((weak)) void usart2Rx_Callback(void){
 	__NOP();
 }
 __attribute__((weak)) void usart6Rx_Callback(void){
+	/*NOTE: esta funcion should not be modified, when the callback is needed,
+	 * 		the BasicTimer_Callback could be implemented in the main file
+	 */
+	__NOP();
+}
+__attribute__((weak)) void usart6Tx_Callback(void){
 	/*NOTE: esta funcion should not be modified, when the callback is needed,
 	 * 		the BasicTimer_Callback could be implemented in the main file
 	 */

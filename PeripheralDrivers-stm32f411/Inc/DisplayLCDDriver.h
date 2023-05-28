@@ -8,6 +8,6 @@
 #ifndef DISPLAYLCDDRIVER_H_
 #define DISPLAYLCDDRIVER_H_
 
-#define ADDRES_LCD 0b0100110 //Direccion del display LCD
+#define ADDRES_LCD 0b01001100 //Direccion del display LCD
 
 #endif /* DISPLAYLCDDRIVER_H_ */
