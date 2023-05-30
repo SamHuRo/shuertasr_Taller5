@@ -14,7 +14,6 @@
 #include <string.h>
 
 #include "BasicTimer.h"
-#include "DisplayLCDDriver.h"
 #include "ExtiDriver.h"
 #include "GPIOxDriver.h"
 #include "I2CDriver.h"
@@ -23,7 +22,7 @@
 #include "PwmDriver.h"
 #include "SysTickDriver.h"
 #include "USARTxDriver.h"
-
+#include "DisplayLCDDriver.h"
 
 /*==========================
  *Configuracion del BlinkyPin
@@ -59,7 +58,7 @@ GPIO_Handler_t handlerPinUSART6_RX = {0};
 USART_Handler_t handlerUSART6 = {0};
 
 uint8_t rxData = 0;
-char bufferData[100] = "Solucion Tarea...\n";
+char bufferData[100] = "Solucion Tarea...";
 
 /*==========================
  * Configuracion del SysTick
@@ -102,6 +101,10 @@ uint16_t var = 0;
 float arregloEjeX[2000];
 float arregloEjeY[2000];
 float arregloEjeZ[2000];
+//Variables para guardar el muestreo de cada uno de los ejes
+float muestreoEjeX = 0;
+float muestreoEjeY = 0;
+float muestreoEjeZ = 0;
 //Variable para empezar a realizar el muestreo
 uint8_t startMuestreo = 0;
 //Variable para comenzar la captura de datos en dos segundos
@@ -112,16 +115,14 @@ uint8_t muestreoListo = 3;
 uint32_t tiempo = 0;
 //Contador para ir guardando los datos en los arreglos
 uint16_t i = 0;
+//Contador para ir mostrando los datos guardados en el arreglo
+uint16_t j = 0;
 //Mensaje para mostrar que la captura esta lista
 char mensaje[50] = "Listo captura";
-//Varaible que nos ayuda a almacenar los datos
-uint16_t j = 0;
-//Bandera para saber cuando se ha enviado un mensaje
-uint8_t mensajeEnviado = 0;
-//Variables para guardar la actualizacion del dutty
-uint32_t newDutty1 = 0;
-uint32_t newDutty2 = 0;
-uint32_t newDutty3 = 0;
+//Variables para guardar el nuevo dutty
+uint16_t nuevoDutty1 = 0;
+uint16_t nuevoDutty2 = 0;
+uint16_t nuevoDutty3 = 0;
 
 
 /*=========================
@@ -262,7 +263,6 @@ void initSystem(void){
 	handlerDisplayLcd.ptrI2Cx									= I2C2;
 	handlerDisplayLcd.modeI2C									= I2C_MODE_FM;
 	handlerDisplayLcd.slaveAddress								= ADDRES_LCD;
-	handlerDisplayLcd.PLL_ON									= PLL_ENABLE;
 	i2c_Config(&handlerDisplayLcd);
 
 	/*----Configuracion del PLL----*/
@@ -298,7 +298,7 @@ void initSystem(void){
 	handlerPwm1.config.channel									= PWM_CHANNEL_4;
 	handlerPwm1.config.duttyCicle								= duttyValue;
 	handlerPwm1.config.periodo									= 20000;
-	handlerPwm1.config.prescaler								= 16;
+	handlerPwm1.config.prescaler								= 80;
 	//Cargamos la configuracion
 	pwm_Config(&handlerPwm1);
 	//Activamos la señal
@@ -320,7 +320,7 @@ void initSystem(void){
 	handlerPwm2.config.channel									= PWM_CHANNEL_1;
 	handlerPwm2.config.duttyCicle								= duttyValue;
 	handlerPwm2.config.periodo									= 20000;
-	handlerPwm2.config.prescaler								= 16;
+	handlerPwm2.config.prescaler								= 80;
 	//Cargamos la configuracion
 	pwm_Config(&handlerPwm2);
 	//Activamos la señal
@@ -342,7 +342,7 @@ void initSystem(void){
 	handlerPwm3.config.channel									= PWM_CHANNEL_2;
 	handlerPwm3.config.duttyCicle								= duttyValue;
 	handlerPwm3.config.periodo									= 20000;
-	handlerPwm3.config.prescaler								= 16;
+	handlerPwm3.config.prescaler								= 80;
 	//Cargamos la configuracion
 	pwm_Config(&handlerPwm3);
 	//Activamos la señal
@@ -366,21 +366,18 @@ void usart6Rx_Callback(void){
 	//Almacenamos el dato que se envio  en la variable rxData
 	rxData = getRxData();
 }
-void usart6Tx_Callback(void){
-	mensajeEnviado ^= 1;
-}
 /*Funcion para realizar el muestreo*/
 void muestreoAccel(void){
 	if(startMuestreo == 1){
 		uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
 		uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
-		float muestreoEjeX =  ((AccelX_high << 8 | AccelX_low)/2560000.f) * 9.78;
+		muestreoEjeX =  ((AccelX_high << 8 | AccelX_low)/327680.f) * 9.78;
 		uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
 		uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
-		float muestreoEjeY = ((AccelY_high << 8 | AccelY_low)/327680.f) * 9.78 + 8.02;
+		muestreoEjeY = ((AccelY_high << 8 | AccelY_low)/327680.f) * 9.78;
 		uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
 		uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
-		float muestreoEjeZ = ((AccelZ_high << 8 | AccelZ_low)/3276800.f) * 9.78 ;
+		muestreoEjeZ = ((AccelZ_high << 8 | AccelZ_low)/3276800.f) * 9.78;
 		startMuestreo = 0;
 		/*Se espera hasta que el usuario hunda la tecla 'c' para poder comenzar la captura de los datos del
 		 * acelerometro y guardarlos en los arreglos correspondientes a cada uno de los ejes.*/
@@ -397,8 +394,8 @@ void muestreoAccel(void){
 			}else{
 				/*Una vez completada la captira de los datos se baja la bandera y se levanta la bandera de que
 				 *  el muestreo esta completo*/
-				muestreoListo = 1;
 				capturarDatos = 0;
+				muestreoListo = 1;
 			}
 		}
 		if(tiempo > 1000){
@@ -407,18 +404,17 @@ void muestreoAccel(void){
 	}
 	//Condicional para verificar si el muestreo se realizo
 	if(muestreoListo == 1){
-		writeMsg(&handlerUSART6, mensaje);
+		writeMsgTX(&handlerUSART6, mensaje);
 		muestreoListo = 0;
 	}
 	//Con los datos obtenidos en el muestreo se van a realizar las variaciones en el dutty de cada uno de los pwm
-	nuevoDutty1 = muestreoEjeX * 10;
-	nuevoDutty2 = muestreoEjeY * 10;
-	nuevoDutty3 = muestreoEjeZ * 10;
+	nuevoDutty1 = 1020*(muestreoEjeX) + 10000;
+	nuevoDutty2 = 1020*(muestreoEjeY) + 10000;
+	nuevoDutty3 = 1020*(muestreoEjeZ) + 10000;
 	//Cargamos el nuevo dutty a si respectivo PWM
 	updateDuttyCycle(&handlerPwm1, nuevoDutty1);
 	updateDuttyCycle(&handlerPwm2, nuevoDutty2);
 	updateDuttyCycle(&handlerPwm3, nuevoDutty3);
-
 }
 /*Funcion que guarda las interacciones del acelerometro con el teclado*/
 void tecladoAccel(void){
@@ -452,11 +448,7 @@ void tecladoAccel(void){
 			sprintf(bufferData, "Axis X data (r)\n");
 			writeMsgTX(&handlerUSART6, bufferData);
 
-			uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
-			uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
-			int16_t AccelX = AccelX_high << 8 | AccelX_low;
-			float AccelX_Value = (AccelX/16384.f) * 9.78;
-			sprintf(bufferData, "AccelX = %.2f m/s2\n", AccelX_Value);
+			sprintf(bufferData, "AccelX = %.2f m/s2, Dutty = %d\n", muestreoEjeX, nuevoDutty1);
 			writeMsgTX(&handlerUSART6, bufferData);
 			rxData = '\0';
 		}
@@ -464,11 +456,7 @@ void tecladoAccel(void){
 			sprintf(bufferData, "Axis Y data (r)\n");
 			writeMsgTX(&handlerUSART6, bufferData);
 
-			uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
-			uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
-			int16_t AccelY = AccelY_high << 8 | AccelY_low;
-			float Accely_Value = (AccelY/2560.f) * 9.78 + 12.01;
-			sprintf(bufferData, "AccelY = %.2f m/s2\n", Accely_Value);
+			sprintf(bufferData, "AccelY = %.2f m/s2, Dutty = %d\n", muestreoEjeY, nuevoDutty2);
 			writeMsgTX(&handlerUSART6, bufferData);
 			rxData = '\0';
 		}
@@ -476,11 +464,7 @@ void tecladoAccel(void){
 			sprintf(bufferData, "Axis Z data (r)\n");
 			writeMsgTX(&handlerUSART6, bufferData);
 
-			uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
-			uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
-			int16_t AccelZ = AccelZ_high << 8 | AccelZ_low;
-			float AccelZ_Value = (AccelZ/2560.f) * 9.78 + 14.45;
-			sprintf(bufferData, "AccelZ = %.2f m/s2\n", AccelZ_Value);
+			sprintf(bufferData, "AccelZ = %.2f m/s2, Dutty = %d\n", muestreoEjeZ, nuevoDutty3);
 			writeMsgTX(&handlerUSART6, bufferData);
 			rxData = '\0';
 		}
@@ -496,7 +480,8 @@ void tecladoAccel(void){
 			tiempo = 0;
 			i = 0;
 			rxData = '\0';
-		}else if(rxData == 'd'){
+		}
+		else if(rxData == 'd'){
 			j = 0;
 			while(j < 2001){
 				sprintf(bufferData, "(%.2f; %.2f; %.2f) m/s2 # %i \n", arregloEjeX[j], arregloEjeY[j], arregloEjeZ[j], j);
@@ -522,4 +507,3 @@ void tecladoAccel(void){
 		}
 	}
 }
-
