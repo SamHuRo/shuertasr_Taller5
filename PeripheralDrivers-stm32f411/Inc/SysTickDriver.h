@@ -12,6 +12,7 @@
 
 #define SYSTICK_LOAD_VALUE_16MHZ_1ms		16000 //Numeros de ciclos en 1ms
 #define SYSTICK_LIAD_VALIE_100MHZ_1ms		100000 //Numero de ciclos en 1ms
+#define SYSTICK_LIAD_VALIE_80MHZ_1ms		80000
 
 void config_SysTick_ms(uint8_t systemClock);
 uint64_t getTicks_ms(void);

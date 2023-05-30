@@ -30,6 +30,9 @@ void config_SysTick_ms(uint8_t systemClock){
 	case 2:
 		SysTick->LOAD = SYSTICK_LIAD_VALIE_100MHZ_1ms;
 		break;
+	case 3:
+		SysTick->LOAD = SYSTICK_LIAD_VALIE_80MHZ_1ms;
+		break;
 	//En caso de que se ingrese un valor diferente
 	default:
 		SysTick->LOAD = SYSTICK_LOAD_VALUE_16MHZ_1ms;

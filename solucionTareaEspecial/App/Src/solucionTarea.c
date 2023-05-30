@@ -24,6 +24,11 @@
 #include "USARTxDriver.h"
 #include "DisplayLCDDriver.h"
 
+#define HSI_CLOCK_CONFIGURED	0 //16MHz
+#define HSE_CLOCK_CONFIGURED	1
+#define PLL_CLOCK_CONFIGURED	2 // 100MHz
+#define PLL_CLOCK_CONFIGURED_80MHz	3 // 80MHz
+
 /*==========================
  *Configuracion del BlinkyPin
  *==========================*/
@@ -140,6 +145,9 @@ int main(void){
 	SCB->CPACR |= (0xF << 20);
 	//Llamammos la funcion para inicializar el MPU
 	initSystem();
+	//Configuracion del SysTick a 80MHz
+	config_SysTick_ms(PLL_CLOCK_CONFIGURED_80MHz);
+
 	//Primer mensaje de que esta funcionando
 	writeMsgTX(&handlerUSART6, bufferData);
 
