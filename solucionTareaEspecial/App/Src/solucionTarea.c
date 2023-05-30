@@ -371,13 +371,13 @@ void muestreoAccel(void){
 	if(startMuestreo == 1){
 		uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
 		uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
-		muestreoEjeX =  ((AccelX_high << 8 | AccelX_low)/327680.f) * 9.78;
+		muestreoEjeX =  ((AccelX_high << 8 | AccelX_low)/51200.f) * 9.78 - 3.24;
 		uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
 		uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
-		muestreoEjeY = ((AccelY_high << 8 | AccelY_low)/327680.f) * 9.78;
+		muestreoEjeY = ((AccelY_high << 8 | AccelY_low)/51200.f) * 9.78 - 3.24;
 		uint8_t AccelZ_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_L);
 		uint8_t AccelZ_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_ZOUT_H);
-		muestreoEjeZ = ((AccelZ_high << 8 | AccelZ_low)/3276800.f) * 9.78;
+		muestreoEjeZ = ((AccelZ_high << 8 | AccelZ_low)/51200.f) * 9.78 - 3.24;
 		startMuestreo = 0;
 		/*Se espera hasta que el usuario hunda la tecla 'c' para poder comenzar la captura de los datos del
 		 * acelerometro y guardarlos en los arreglos correspondientes a cada uno de los ejes.*/
