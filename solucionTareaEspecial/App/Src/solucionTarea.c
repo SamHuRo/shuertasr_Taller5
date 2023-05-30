@@ -147,7 +147,6 @@ int main(void){
 	initSystem();
 	//Configuracion del SysTick a 80MHz
 	config_SysTick_ms(PLL_CLOCK_CONFIGURED_80MHz);
-
 	//Primer mensaje de que esta funcionando
 	writeMsgTX(&handlerUSART6, bufferData);
 

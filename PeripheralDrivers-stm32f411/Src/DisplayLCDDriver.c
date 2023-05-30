@@ -70,37 +70,37 @@ void clearLCD(I2C_Handler_t *ptrHandlerI2C){
 void init_LCD(I2C_Handler_t *ptrHandlerI2C){
 
 	// Delay de inizializacion
-	delay_50();
+	delay_ms(50);
 	// Primer 0x30 para BF
 	sendCMD_toLCD(ptrHandlerI2C, 0x30);
-	delay_5();
+	delay_ms(5);
 	// Segundo 0x30 para BF
 	sendCMD_toLCD(ptrHandlerI2C, 0x30);
-	delay_1();
+	delay_ms(1);
 	// Tercer 0x30 para BF
 	sendCMD_toLCD(ptrHandlerI2C, 0x30);
 
 	// Delay después de la secuencia inicial de inicializacion
-	delay_50();
+	delay_ms(50);
 
 	/*
 	 * Configuraciones para la escritura
 	 */
 	// Data lenght 4, lines 2, character font 5X8
 	sendCMD_toLCD(ptrHandlerI2C, 0x20);
-	delay_50();
+	delay_ms(50);
 	sendCMD_toLCD(ptrHandlerI2C, 0x28);
-	delay_50();
+	delay_ms(50);
 	// Display off
 	sendCMD_toLCD(ptrHandlerI2C, 0x08);
-	delay_50();
+	delay_ms(50);
 	// Display Clear
 	sendCMD_toLCD(ptrHandlerI2C, 0x01);
-	delay_50();
+	delay_ms(50);
 	// Entry mode
 	sendCMD_toLCD(ptrHandlerI2C, 0x06);
 
-	delay_50();
+	delay_ms(50);
 	// Delay para encendido
 	sendCMD_toLCD(ptrHandlerI2C, 0x0C);
 }
