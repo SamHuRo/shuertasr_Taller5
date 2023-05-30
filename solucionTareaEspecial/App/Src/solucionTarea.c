@@ -245,7 +245,7 @@ void initSystem(void){
 	handlerAccelerometer.modeI2C								= I2C_MODE_FM;
 	handlerAccelerometer.slaveAddress							= ACCEL_ADDRESS;
 	handlerAccelerometer.PLL_ON									= PLL_ENABLE;
-	i2c_Config(&handlerAccelerometer);
+//	i2c_Config(&handlerAccelerometer);
 
 	/*----Configuracion para el protocolo I2C para el display LCD----*/
 	//Configuracion de los pines para el I2C -> SCL
