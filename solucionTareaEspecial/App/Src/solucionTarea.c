@@ -270,6 +270,7 @@ void initSystem(void){
 	handlerDisplayLcd.ptrI2Cx									= I2C2;
 	handlerDisplayLcd.modeI2C									= I2C_MODE_FM;
 	handlerDisplayLcd.slaveAddress								= ADDRES_LCD;
+	handlerDisplayLcd.PLL_ON									= PLL_ENABLE;
 	i2c_Config(&handlerDisplayLcd);
 
 	/*----Configuracion del PLL----*/
