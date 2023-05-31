@@ -25,8 +25,6 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* Comenzamos la configuración del ADC1 */
 	/* 3. Resolución del ADC */
-	//Limpiamos el registro
-	ADC1->CR1 &= ~ADC_CR1_RES;
 	switch(adcConfig->resolution){
 	case ADC_RESOLUTION_12_BIT:
 	{
@@ -70,8 +68,6 @@ void adc_Config(ADC_Config_t *adcConfig){
 	//Para desactivar el SCAN modo el bit en este registro debe de ser 0, para activarlo debe ser  igual a 1
 	ADC1->CR1 &= ~ADC_CR1_SCAN;
 
-	//Limpiamos el registro CR2 para la alineacion de los datos
-	ADC1->CR2 &= ~ADC_CR2_ALIGN;
 	/* 5. Configuramos la alineación de los datos (derecha o izquierda) */
 	if(adcConfig->dataAlignment == ADC_ALIGNMENT_RIGHT){
 		// Alineación a la derecha (esta es la forma "natural")
@@ -172,8 +168,6 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* 11. Activamos la interrupción debida a la finalización de una conversión EOC (CR1)*/
 	// Escriba su código acá
-	//Limpiamos el registro
-	ADC1->CR1 &= ~ADC_CR1_EOCIE;
 	//Activamos la interrupcion
 	ADC1->CR1 |= ADC_CR1_EOCIE;
 
@@ -188,8 +182,6 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* 12. Activamos el modulo ADC */
 	// Escriba su código acá
-	//Limpiamos el registro
-	ADC1->CR2 &= ~ADC_CR2_ADON;
 	//Activamos el modulo ADC
 	ADC1->CR2 |= ADC_CR2_ADON;
 
@@ -208,7 +200,7 @@ void adc_Config(ADC_Config_t *adcConfig){
 void startSingleADC(void){
 	/* Desactivamos el modo continuo de ADC */
 	// Escriba su código acá
-
+	ADC1->CR2 &= ~ADC_CR2_CONT;
 
 	/* Limpiamos el bit del overrun (CR1) */
 	// Escriba su código acá
@@ -216,7 +208,7 @@ void startSingleADC(void){
 
 	/* Iniciamos un ciclo de conversión ADC (CR2)*/
 	// Escriba su código acá
-
+	ADC1->CR2 |= ADC_CR2_SWSTART;
 }
 
 /*
@@ -230,11 +222,11 @@ void startContinousADC(void){
 
 	/* Activamos el modo continuo de ADC */
 	// Escriba su código acá
-
+	ADC1->CR2 |= ADC_CR2_CONT;
 
 	/* Iniciamos un ciclo de conversión ADC */
 	// Escriba su código acá
-
+	ADC1->CR2 |= ADC_CR2_SWSTART;
 }
 
 /*
