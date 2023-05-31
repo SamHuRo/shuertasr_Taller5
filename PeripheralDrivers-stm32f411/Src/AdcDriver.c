@@ -86,10 +86,13 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* 6. Desactivamos el "continuos mode" */
 	// Escriba su código acá
+	//Este registro sirve para decirle a la MCU si realizar una sola conversion o realizar una conrversion continua
+	ADC1->CR2 &= ~ADC_CR2_CONT;
 
 	/* 7. Acá se debería configurar el sampling...*/
 	if(adcConfig->channel < ADC_CHANNEL_9){
 		// Escriba su código acá
+
 	}
 	else{
 		// Escriba su código acá
@@ -107,6 +110,7 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* 10. Desactivamos las interrupciones globales */
 	// Escriba su código acá
+	__disable_irq();
 
 	/* 11. Activamos la interrupción debida a la finalización de una conversión EOC (CR1)*/
 	// Escriba su código acá
@@ -122,6 +126,7 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* 13. Activamos las interrupciones globales */
 	// Escriba su código acá
+	__enable_irq();
 }
 
 /*
