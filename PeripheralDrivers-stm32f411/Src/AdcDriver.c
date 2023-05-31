@@ -25,32 +25,37 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* Comenzamos la configuración del ADC1 */
 	/* 3. Resolución del ADC */
+	//Limpiamos el registro
+	ADC1->CR1 &= ~ADC_CR1_RES;
 	switch(adcConfig->resolution){
 	case ADC_RESOLUTION_12_BIT:
 	{
 		// Escriba su código acá
-		// Escriba su código acá
+		//Seleccionando 12 bits (15 ADCCLK ciclos)
+		ADC1->CR1 &= ~ADC_CR1_RES;
 		break;
 	}
 
 	case ADC_RESOLUTION_10_BIT:
 	{
 		// Escriba su código acá
-		// Escriba su código acá
+		// Seleccionando 10 bits (13 ADCCLK ciclos)
+		ADC1->CR1 |= ADC_CR1_RES_0;
 		break;
 	}
 
 	case ADC_RESOLUTION_8_BIT:
 	{
 		// Escriba su código acá
-		// Escriba su código acá
+		// Seleccionando 8 bits (11 ADCCLK ciclos)
+		ADC1->CR1 |= ADC_CR1_RES_1;
 		break;
 	}
 
 	case ADC_RESOLUTION_6_BIT:
 	{
-		ADC1->CR1 |= ADC_CR1_RES_0;
-		ADC1->CR1 |= ADC_CR1_RES_1;
+		// Seleccionando 6 bits (9 ADCCLK ciclos)
+		ADC1->CR1 |= ADC_CR1_RES;
 		break;
 	}
 
@@ -62,16 +67,21 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* 4. Configuramos el modo Scan como desactivado */
 	// Escriba su código acá
+	//Para desactivar el SCAN modo el bit en este registro debe de ser 0, para activarlo debe ser  igual a 1
+	ADC1->CR1 &= ~ADC_CR1_SCAN;
 
+	//Limpiamos el registro CR2 para la alineacion de los datos
+	ADC1->CR2 &= ~ADC_CR2_ALIGN;
 	/* 5. Configuramos la alineación de los datos (derecha o izquierda) */
 	if(adcConfig->dataAlignment == ADC_ALIGNMENT_RIGHT){
 		// Alineación a la derecha (esta es la forma "natural")
 		// Escriba su código acá
+		ADC1->CR2 &= ~ADC_CR2_ALIGN;
 	}
 	else{
-
 		// Alineación a la izquierda (para algunos cálculos matemáticos)
 		// Escriba su código acá
+		ADC1->CR2 |= ADC_CR2_ALIGN;
 	}
 
 	/* 6. Desactivamos el "continuos mode" */
