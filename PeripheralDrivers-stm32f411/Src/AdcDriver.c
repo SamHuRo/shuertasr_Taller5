@@ -16,6 +16,8 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* 2. Activamos la señal de reloj para el periférico ADC1 (bus APB2)*/
 	// Escriba su código acá
+	RCC->APB2ENR &= ~RCC_APB2ENR_ADC1EN; //Limpiamos el registro
+	RCC->APB2ENR |= RCC_APB2ENR_ADC1EN; //Activamos la señal de reloj para el ADC
 
 	// Limpiamos los registros antes de comenzar a configurar
 	ADC1->CR1 = 0;
