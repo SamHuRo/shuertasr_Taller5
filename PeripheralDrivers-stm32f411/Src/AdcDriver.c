@@ -172,15 +172,24 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* 11. Activamos la interrupción debida a la finalización de una conversión EOC (CR1)*/
 	// Escriba su código acá
+	//Limpiamos el registro
+	ADC1->CR1 &= ~ADC_CR1_EOCIE;
+	//Activamos la interrupcion
+	ADC1->CR1 |= ADC_CR1_EOCIE;
 
 	/* 11a. Matriculamos la interrupción en el NVIC*/
 	// Escriba su código acá
+	__NVIC_EnableIRQ(ADC_IRQn);
 
 	/* 11b. Configuramos la prioridad para la interrupción ADC */
 	// Escriba su código acá
 
 	/* 12. Activamos el modulo ADC */
 	// Escriba su código acá
+	//Limpiamos el registro
+	ADC1->CR2 &= ~ADC_CR2_ADON;
+	//Activamos el modulo ADC
+	ADC1->CR2 |= ADC_CR2_ADON;
 
 	/* 13. Activamos las interrupciones globales */
 	// Escriba su código acá
