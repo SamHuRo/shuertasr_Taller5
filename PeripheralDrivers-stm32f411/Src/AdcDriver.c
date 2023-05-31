@@ -183,6 +183,8 @@ void adc_Config(ADC_Config_t *adcConfig){
 
 	/* 11b. Configuramos la prioridad para la interrupción ADC */
 	// Escriba su código acá
+	/*Para configurar la prioriad a las interrupciones del ADC se deben de colocar en el NVIC con la funcion __NVIC_SetPriority() */
+	__NVIC_SetPriority(ADC_IRQn, 5);
 
 	/* 12. Activamos el modulo ADC */
 	// Escriba su código acá
@@ -207,8 +209,10 @@ void startSingleADC(void){
 	/* Desactivamos el modo continuo de ADC */
 	// Escriba su código acá
 
+
 	/* Limpiamos el bit del overrun (CR1) */
 	// Escriba su código acá
+	ADC1->CR1 &= ~ADC_CR1_OVRIE;
 
 	/* Iniciamos un ciclo de conversión ADC (CR2)*/
 	// Escriba su código acá
@@ -227,6 +231,7 @@ void startContinousADC(void){
 	/* Activamos el modo continuo de ADC */
 	// Escriba su código acá
 
+
 	/* Iniciamos un ciclo de conversión ADC */
 	// Escriba su código acá
 
@@ -240,6 +245,8 @@ void startContinousADC(void){
 uint16_t getADC(void){
 	// Esta variable es actualizada en la ISR de la conversión, cada vez que se obtiene
 	// un nuevo valor.
+	adcRawData = ADC1->DR;
+
 	return adcRawData;
 }
 
