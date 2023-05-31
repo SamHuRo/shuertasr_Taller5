@@ -293,41 +293,48 @@ void configAnalogPin(uint8_t adcChannel) {
 
 	case ADC_CHANNEL_1: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx						= GPIOA;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_1;
 		break;
 	}
 
 	case ADC_CHANNEL_2: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx						= GPIOA;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_2;
 		break;
 	}
 
 	case ADC_CHANNEL_3: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx						= GPIOA;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_3;
 		break;
 	}
 
 	case ADC_CHANNEL_4: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx						= GPIOA;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_4;
 		break;
 	}
 
 	case ADC_CHANNEL_5: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx						= GPIOA;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_5;
 		break;
 	}
 	case ADC_CHANNEL_6: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx						= GPIOA;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_6;
 		break;
 	}
 	case ADC_CHANNEL_7: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx						= GPIOA;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_7;
 		break;
 	}
 	case ADC_CHANNEL_8: {
@@ -338,37 +345,44 @@ void configAnalogPin(uint8_t adcChannel) {
 	}
 	case ADC_CHANNEL_9: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx 						= GPIOB;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_1;
 		break;
 	}
 	case ADC_CHANNEL_10: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx 						= GPIOC;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_0;
 		break;
 	}
 	case ADC_CHANNEL_11: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx 						= GPIOC;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_1;
 		break;
 	}
 	case ADC_CHANNEL_12: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx 						= GPIOC;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_2;
 		break;
 	}
 	case ADC_CHANNEL_13: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx 						= GPIOC;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_3;
 		break;
 	}
 	case ADC_CHANNEL_14: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx 						= GPIOC;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_4;
 		break;
 	}
 	case ADC_CHANNEL_15: {
 		// Buscar y configurar adecuadamente
-
+		handlerAdcPin.pGPIOx 						= GPIOC;
+		handlerAdcPin.GPIO_PinConfig.GPIO_PinNumber = PIN_5;
 		break;
 	}
 	default: {
