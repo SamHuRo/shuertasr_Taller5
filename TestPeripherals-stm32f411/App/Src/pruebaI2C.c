@@ -13,14 +13,20 @@
 
 #include <stm32f4xx.h>
 
-#include "GPIOxDriver.h"
-#include "ExtiDriver.h"
+//Drivers para la implementacion de los perifericos
+#include "AdcDriver.h"
 #include "BasicTimer.h"
-#include "USARTxDriver.h"
-#include "SysTickDriver.h"
-#include "PwmDriver.h"
-#include "PLLDriver.h"
+#include "CintaLedDriver.h"
+#include "DisplayLCDDriver.h"
+#include "ExtiDriver.h"
+#include "GPIOxDriver.h"
 #include "I2CDriver.h"
+#include "MPUxDriver.h"
+#include "PLLDriver.h"
+#include "PwmDriver.h"
+#include "SysTickDriver.h"
+#include "USARTxDriver.h"
+
 
 /*Definicion de variables*/
 GPIO_Handler_t handlerLedOK = {0};
