@@ -259,7 +259,7 @@ void ADC_IRQHandler(void){
 		// Leemos el resultado de la conversión ADC y lo cargamos en una variale auxiliar
 		// la cual es utilizada en la función getADC()
 		// Escriba su código acá
-
+		getADC();
 		// Hacemos el llamado a la función que se ejecutará en el main
 		adcComplete_Callback();
 	}
