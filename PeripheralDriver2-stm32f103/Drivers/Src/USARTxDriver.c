@@ -124,13 +124,13 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 	}
 
 	// 2.5 Configuracion del Baudrate (SFR USART_BRR)
-	// Ver tabla de valores (Tabla 73), Frec = 16MHz, overr = 0;
+	// Ver tabla de valores (Tabla 73), Frec = 8MHz, overr = 0;
 	if(ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_9600){
-		// El valor a cargar es 104.1875 -> Mantiza = 104,fraction = 0.1875
-		// Mantiza = 104 = 0x68, fraction = 16 * 0.1875 = 3
-		// Valor a cargar 0x0683
+		// El valor a cargar es 52.08333 -> Mantiza = 52,fraction = 0.08333
+		// Mantiza = 52 = 0x34, fraction = 16 * 0.08333 = 1
+		// Valor a cargar 0x0341
 		// Configurando el Baudrate generator para una velocidad de 9600bps
-		ptrUsartHandler->ptrUSARTx->BRR = 0x0683;
+		ptrUsartHandler->ptrUSARTx->BRR = 0x0341;
 	}
 
 	else if (ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_19200) {
@@ -142,11 +142,11 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 	}
 
 	else if(ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_115200){
-		// El valor a cargar es 8.625 -> Mantiza = 8, fraction = 0.6805
-		// Mantiza = 8 = 0x8, fraction = 16*0.6805 = 11 = 0xB
-		// BRR = 0x008B
+		// El valor a cargar es 4.340277 -> Mantiza = 4, fraction = 0.3402777
+		// Mantiza = 4 = 0x4, fraction = 16*0.3402777 = 5 = 0x5
+		// BRR = 0x0045
 		// Escriba acá su código y los comentarios que faltan
-		ptrUsartHandler->ptrUSARTx->BRR = 0x008B;
+		ptrUsartHandler->ptrUSARTx->BRR = 0x0045;
 	}
 
 	// 2.6 Configuramos el modo: TX only, RX only, RXTX, disable
