@@ -262,11 +262,11 @@ void USART2_IRQHandler(void){
 		usart2Rx_Callback();
 	}
 }
-void USART6_IRQHandler(void){
+void USART3_IRQHandler(void){
 	//Evaluamos si la interrupcion que se dio es por RX
 	if(USART3->SR & USART_SR_RXNE){
 		auxRxData = (uint8_t) USART3->DR;
-		usart6Rx_Callback();
+		usart3Rx_Callback();
 	}
 	//
 }
@@ -284,7 +284,7 @@ __attribute__((weak)) void usart2Rx_Callback(void){
 	 */
 	__NOP();
 }
-__attribute__((weak)) void usart6Rx_Callback(void){
+__attribute__((weak)) void usart3Rx_Callback(void){
 	/*NOTE: esta funcion should not be modified, when the callback is needed,
 	 * 		the BasicTimer_Callback could be implemented in the main file
 	 */

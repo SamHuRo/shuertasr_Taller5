@@ -84,7 +84,7 @@ uint8_t getRxData(void);
 
 void usart1Rx_Callback(void);
 void usart2Rx_Callback(void);
-void usart6Rx_Callback(void);
+void usart3Rx_Callback(void);
 
 
 #endif /* INC_USARTXDRIVER_H_ */

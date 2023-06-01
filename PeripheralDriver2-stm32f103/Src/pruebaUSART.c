@@ -50,19 +50,26 @@ int main(void)
 	while(1){
 
 		//Primer ejemplo del usart
-		if(sendMsg > 4){
-			writeChar(&usart2Comm, 'H');
-			writeChar(&usart2Comm, 'O');
-			writeChar(&usart2Comm, 'L');
-			writeChar(&usart2Comm, 'A');
-			writeChar(&usart2Comm, ' ');
-			writeChar(&usart2Comm, 'M');
-			writeChar(&usart2Comm, 'U');
-			writeChar(&usart2Comm, 'N');
-			writeChar(&usart2Comm, 'D');
-			writeChar(&usart2Comm, 'O');
+//		if(sendMsg > 4){
+//			writeChar(&usart2Comm, 'H');
+//			writeChar(&usart2Comm, 'O');
+//			writeChar(&usart2Comm, 'L');
+//			writeChar(&usart2Comm, 'A');
+//			writeChar(&usart2Comm, ' ');
+//			writeChar(&usart2Comm, 'M');
+//			writeChar(&usart2Comm, 'U');
+//			writeChar(&usart2Comm, 'N');
+//			writeChar(&usart2Comm, 'D');
+//			writeChar(&usart2Comm, 'O');
+//			sendMsg = 0;
+//		}
+
+		//Segunda prueba con el usart, enviando un mensaje
+		if(sendMsg > 10){
+			writeMsg(&usart2Comm, mensaje);
 			sendMsg = 0;
 		}
+
 
 		/*Se va a actuvar cuando se detecte la interrupcion, ya que una interrupcion no se puede demorar mas de 1ms, poniendo esta opcion en el main,
 		 * el tiempo de la interrupcion se demora 5 micro-segundos*/
@@ -125,6 +132,7 @@ void initSystem(void){
 	usart2Comm.USART_Config.USART_parity			= USART_PARITY_NONE;
 	usart2Comm.USART_Config.USART_stopbits			= USART_STOPBIT_1;
 	usart2Comm.USART_Config.USART_mode				= USART_MODE_RXTX;
+	usart2Comm.USART_Config.USART_enableIntRX		= USART_RX_INTERRUP_ENABLE;
 	//Cargar la configuracion del USART
 	USART_Config(&usart2Comm);
 }
