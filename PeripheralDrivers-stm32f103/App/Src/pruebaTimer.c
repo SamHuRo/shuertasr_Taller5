@@ -48,3 +48,6 @@ void initSystem(void){
 	BasicTimer_Config(&handlerTimerBlinkyPin);
 }
 
+void BasicTimer2_Callback(void){
+	GPIO_TooglePin(&BlinkyPin);
+}
