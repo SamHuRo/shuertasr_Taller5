@@ -89,67 +89,12 @@ void adc_Config(ADC_Config_t *adcConfig){
 	if(adcConfig->channel < ADC_CHANNEL_9){
 		// Escriba su código acá
 		//Si el canal en menor a 9 el registro va estar en ADC_SMPR2
-		switch(adcConfig->channel){
-		case 0 :
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP0_Pos;
-			break;
-		case 1:
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP1_Pos;
-			break;
-		case 2:
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP2_Pos;
-			break;
-		case 3:
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP3_Pos;
-			break;
-		case 4:
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP4_Pos;
-			break;
-		case 5:
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP5_Pos;
-			break;
-		case 6:
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP6_Pos;
-			break;
-		case 7:
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP7_Pos;
-			break;
-		case 8:
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP8_Pos;
-			break;
-		case 9:
-			ADC1->SMPR2 |= adcConfig->samplingPeriod << ADC_SMPR2_SMP9_Pos;
-			break;
-		}
-
+		ADC1->SMPR2 |= adcConfig->samplingPeriod << (3 * adcConfig->channel);
 	}
 	else{
 		// Escriba su código acá
 		//Si el canal en mayor a 9 el registro va estar en ADC_SMPR1
-		switch(adcConfig->channel){
-		case 10 :
-			ADC1->SMPR1 |= adcConfig->samplingPeriod << ADC_SMPR1_SMP10_Pos;
-			break;
-		case 11:
-			ADC1->SMPR1 |= adcConfig->samplingPeriod << ADC_SMPR1_SMP11_Pos;
-			break;
-		case 12:
-			ADC1->SMPR1 |= adcConfig->samplingPeriod << ADC_SMPR1_SMP12_Pos;
-			break;
-		case 13:
-			ADC1->SMPR1 |= adcConfig->samplingPeriod << ADC_SMPR1_SMP13_Pos;
-			break;
-		case 14:
-			ADC1->SMPR1 |= adcConfig->samplingPeriod << ADC_SMPR1_SMP14_Pos;
-			break;
-		case 15:
-			ADC1->SMPR1 |= adcConfig->samplingPeriod << ADC_SMPR1_SMP15_Pos;
-			break;
-		case 16:
-			ADC1->SMPR1 |= adcConfig->samplingPeriod << ADC_SMPR1_SMP16_Pos;
-			break;
-		}
-
+		ADC1->SMPR1 |= adcConfig->samplingPeriod << ((3 * adcConfig->channel) - 30);
 	}
 
 	/* 8. Configuramos la secuencia y cuantos elementos hay en la secuencia */
