@@ -4,9 +4,9 @@
  *  Created on: May 12, 2023
  *      Author: samuel
  */
-
 #include <stm32f4xx.h>
 #include <USARTxDriver.h>
+#include "PLLDriver.h"
 
 uint8_t auxRxData = 0;
 uint8_t auxFun = 0;
@@ -15,6 +15,7 @@ char auxArreglo[100];
 uint32_t contador = 0;
 volatile uint16_t tx_index = 0;
 volatile uint16_t tx_length = 0;
+uint16_t freqMCU = 0;
 
 /**
  * Configurando el puerto Serial...
@@ -143,7 +144,9 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Mantiza => 520 = 0x208, fraction = 16 * 0.833 = 13 = 0xD
 			// Valor a cargar 0x208D
 			// Configurando el Baudrate generator para una velocidad de 9600bps
-			ptrUsartHandler->ptrUSARTx->BRR = 0x208D;
+			//ptrUsartHandler->ptrUSARTx->BRR = 0x208D;
+			freqMCU = getConfigPLL();
+			ptrUsartHandler->ptrUSARTx->BRR = (freqMCU * 1000000 / (16 * 9600)) * 16;
 		}
 
 	}
@@ -160,7 +163,9 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Mantiza => 260 = 0x104, fraction = 16 * 0.41666 = 6 = 0x6
 			// Valor a cargar 0x1046
 			// Configurando el Baudrate generator para una velocidad de 19200bps
-			ptrUsartHandler->ptrUSARTx->BRR = 0x1046;
+			//ptrUsartHandler->ptrUSARTx->BRR = 0x1046;
+			freqMCU = getConfigPLL();
+			ptrUsartHandler->ptrUSARTx->BRR = (freqMCU * 1000000 / (16 * 19200)) * 16;
 		}
 
 	}
@@ -178,7 +183,10 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Mantiza => 43 = 0x2B, fraction = 16 * 0.4027 = 6 = 0x6
 			// Valor a cargar 0x02B6
 			// Configurando el Baudrate generator para una velocidad de 115200bps
-			ptrUsartHandler->ptrUSARTx->BRR = 0x02B6;
+			//ptrUsartHandler->ptrUSARTx->BRR = 0x02B6;
+			freqMCU = getConfigPLL();
+			ptrUsartHandler->ptrUSARTx->BRR = (freqMCU * 1000000 / (16 * 115200)) * 16;
+
 		}
 	}
 
@@ -291,6 +299,9 @@ int writeChar(USART_Handler_t *ptrUsartHandler, char dataToSend){
 
 /*Funcion para enviar un dato con la interrupcion de TX*/
 int writeCharTX(USART_Handler_t *ptrUsartHandler, char dataToSend){
+	while(!(ptrUsartHandler->ptrUSARTx->SR & USART_SR_TC)){
+		__NOP();
+	}
 	//Actiavmos las interrupciones de transmision
 	ptrUsartHandler->ptrUSARTx->CR1 |= USART_CR1_TXEIE;
 	//Cargamos la variable de dataToSend en la variable global dataToSendTX
