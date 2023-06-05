@@ -25,20 +25,26 @@
 #include "USARTxDriver.h"
 
 /*==========================
- *Configuracion del BlinkyPin
+ *  		Macros
+ *==========================*/
+#define BUFFER_SIZE 		25
+
+
+/*==========================
+ *  Handler del BlinkyPin
  *==========================*/
 GPIO_Handler_t BlinkyPin = {0};
 BasicTimer_Handler_t handlerTimerBlinkyPin = {0};
 
 /*==============================
- * Configuracion del USART
+ *     Handler del USART
  *===============================*/
 GPIO_Handler_t handlerPinTX = {0};
 GPIO_Handler_t handlerPinRX = {0};
 USART_Handler_t handlerTerminal = {0};
 
 /*==========================
- * Configuracion para el I2C
+ *   Handler para el I2C
  * ==========================*/
 //Acelerometro
 GPIO_Handler_t SDAAccel = {0};
@@ -47,30 +53,42 @@ I2C_Handler_t handlerAccelerometer = {0};
 uint8_t i2cBuffer = 0;
 
 /*==========================
- * Configuracion del MCO1
+ *   Handler del MCO1
  *==========================*/
 GPIO_Handler_t Mco1Pin = {0};
 
 /*==========================
- * Configuracion del PLL
+ *    Handler del PLL
  *==========================*/
-PLL_Config_t handlerPLL = {0}; //Se va a guardar la configuracion del PLL
+PLL_Config_t handlerPLL = {0};
+
+/*==========================
+ *   Handler del ADC
+ *==========================*/
+ADC_Config_t handlerAdc = {0};
 
 /*=========================
  * Cabeceras de las funciones
  * ==========================*/
 void initSystem(void);
+void parseCommands(char *prtBufferReception);
 
 /*=========================
  * 	 Variables Globales
  * ==========================*/
-uint8_t rxData = 0;
-uint16_t contadorRecepcion = 0;
-uint8_t bufferReception[] = {0};
-bool stringComplete = false;
-unsigned int firstParameter;
-unsigned int secondParameter;
-char bufferData[24] = "accel MPU-6050 testing..";
+uint8_t rxData = 0; //Esta variable se encarga de guardar el caracter que el usuario hunde en el teclado
+uint16_t contadorComando = 0; //Variable encargada de saber la posicion en la que se encuentra en el arreglo de bufferComando
+char bufferComando[BUFFER_SIZE] = {0}; //Arreglo para almacenar los comandos que el usuario introduce
+uint8_t stringComplete = 0;	//Bandera encargada de activarse cuando el usuario termina de introducir un comando
+/*Variable utilizadas en la funcion parseCommand()*/
+char cmd[BUFFER_SIZE] = {0};
+unsigned int firstParameter = 0;
+unsigned int secondParameter = 0;
+char userMsg[BUFFER_SIZE] = {0};
+
+char bufferData[BUFFER_SIZE] = "accel MPU-6050 testing..";
+
+
 
 int main(void){
 	//Cargamos la configuracion de los pines
@@ -78,17 +96,36 @@ int main(void){
 
 	while(1){
 		if(rxData != '\0'){
-					writeChar(&handlerTerminal, rxData);
+			//Almacenamos el caracter introducido por el usuario en el arreglo
+			bufferComando[contadorComando] = rxData;
+			//Aumentamos en uno el contador
+			contadorComando++;
+			/*Cuando el usuario introdusca '@' es cuando ya se ha finalizado de introducir el comando
+			 * por lo que se debe de levantar la bandera stringComplete.*/
+			if(rxData == '@'){
+				//Se levanta la bandera
+				stringComplete = 1;
+				//Se cambia el ultimo caracter introducido por '\0'
+				bufferComando[(contadorComando - 1)] = '\0';
+				//Se reinicia el contador
+				contadorComando = 0;
+			}
 
-					if(rxData == 'w'){
-						sprintf(bufferData, "WHO_AM_I? (r)\n");
-						writeMsg(&handlerTerminal, bufferData);
+			if(rxData == 'w'){
+				sprintf(bufferData, "WHO_AM_I? (r)\n");
+				writeMsg(&handlerTerminal, bufferData);
 
-						i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
-						sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
-						writeMsg(&handlerTerminal, bufferData);
-						rxData = '\0';
-					}
+				i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
+				sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
+				writeMsg(&handlerTerminal, bufferData);
+			}
+			rxData = '\0';
+		}
+		if(stringComplete == 1){
+			//Cuando se finaliza de introducir el comando se entra a la funcion parseCommands()
+			parseCommands(bufferComando);
+			//Se baja la bandera
+			stringComplete = 0;
 		}
 	}
 }
@@ -102,11 +139,11 @@ void initSystem(void){
 	/*=======================
 	 * Configuracion del PLL
 	 *=======================*/
+	handlerPLL.PLL_ON											= PLL_DISABLE;
 //	handlerPLL.PLL_PLLM											= 10;
 //	handlerPLL.PLL_PLLN											= 100;
 //	handlerPLL.PLL_PLLP											= PLLP_2;
 //	handlerPLL.PLL_MCO1PRE										= PLL_MCO1PRE_4;
-	handlerPLL.PLL_ON											= PLL_DISABLE;
 	//Cargar la configuracion del PLL
 	ConfigPLL(&handlerPLL);
 
@@ -218,7 +255,32 @@ void initSystem(void){
 /*=======================================
  *   Funciones utilizadas en el Main
  *=======================================*/
+void parseCommands(char *prtBufferReception){
+	/*Esta funcion se encarga de leer la cadena de caracteres a la que apunta 'prt' y la divide
+	 * y la almacena en tres elementos:
+	 * 		1) un string llamado 'cmd'
+	 * 		2) un numero intiger llamado fiertParameter
+	 * 		3) un numero intiger llamado secondParameter
+	 * 		4) un string llamado 'userMsg'
+	 * 	De esta forma podemos introducir informacion al micro desde el puerto serial*/
+	sscanf(prtBufferReception, "%s %u %u %s", cmd, &firstParameter, &secondParameter, userMsg);
 
+	//El primer comando imprime una lista de los comandos que existen
+	if(strcmp(cmd, "help") == 0){
+		writeMsg(&handlerTerminal, "Help Menu  CMDs\n");
+		writeMsg(&handlerTerminal, "1) Control MCO1\n");
+		writeMsg(&handlerTerminal, "2) Control MCO1\n");
+		writeMsg(&handlerTerminal, "3) Configurar RTC\n");
+		writeMsg(&handlerTerminal, "4) Configurar RTC\n");
+		writeMsg(&handlerTerminal, "5) Configurar RTC\n");
+		writeMsg(&handlerTerminal, "6) Configurar RTC\n");
+		writeMsg(&handlerTerminal, "7) Adquisicion ADC\n");
+		writeMsg(&handlerTerminal, "8) Adquisicion ADC\n");
+		writeMsg(&handlerTerminal, "9) Utilizar acelerometro(captura de datos)\n");
+		writeMsg(&handlerTerminal, "10) Utilizar acelerometro(CMSIS-FFT)\n");
+
+	}
+}
 
 /*=======================================
  * Funciones Callback de los perifericos
