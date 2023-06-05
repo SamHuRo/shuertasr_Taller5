@@ -32,11 +32,8 @@ void i2c_Config(I2C_Handler_t *ptrHandlerI2C){
 	//3. Indicamos cual es la velocidad del reloj principal, que es la señal utilizada por el
 	// periferico para generar la señal de reloj para el bus I2C
 	ptrHandlerI2C->ptrI2Cx->CR2 &= ~(0b111111 << I2C_CR2_FREQ_Pos); //Borramos la configuracion
-	if(ptrHandlerI2C->PLL_ON == PLL_DISABLE){
-		ptrHandlerI2C->ptrI2Cx->CR2 |= (MAIN_CLOCK_16_MHz_FOR_I2C << I2C_CR2_FREQ_Pos);
-	}else if(ptrHandlerI2C->PLL_ON == PLL_ENABLE){
-		ptrHandlerI2C->ptrI2Cx->CR2 |= (MAIN_CLOCK_40_MHz_FOR_I2C << I2C_CR2_FREQ_Pos);
-	}
+	ptrHandlerI2C->ptrI2Cx->CR2 |= (ptrHandlerI2C->I2C_MAIN_CLOCK << I2C_CR2_FREQ_Pos);
+
 
 
 	/*4. Configuramos el modo I2C en el que el sistema funciona
@@ -50,35 +47,21 @@ void i2c_Config(I2C_Handler_t *ptrHandlerI2C){
 		/*Estamos en modo "standar" (SM mode)*/
 		//Seleccionamos el modo estandar
 		ptrHandlerI2C->ptrI2Cx->CCR &= ~I2C_CCR_FS;
-		if(ptrHandlerI2C->PLL_ON == PLL_DISABLE){
-			//Configuramos el registro que se encarga de generar la señal de reloj
-			ptrHandlerI2C->ptrI2Cx->CCR |= (I2C_MODE_SM_SPEED_100KHz << I2C_CCR_CCR_Pos);
-			//Configuramos el registro que controla el tiempo T-Rise maximo
-			ptrHandlerI2C->ptrI2Cx->TRISE |= I2C_MAX_RISE_TIME_SM;
-		}else if(ptrHandlerI2C->PLL_ON == PLL_ENABLE){
-			//Configuramos el registro que se encarga de generar la señal de reloj
-			ptrHandlerI2C->ptrI2Cx->CCR |= (I2C_MODE_SM_SPEED_100KHz_CLOCK_40MHz << I2C_CCR_CCR_Pos);
-			//Configuramos el registro que controla el tiempo T-Rise maximo
-			ptrHandlerI2C->ptrI2Cx->TRISE |= I2C_MAX_RISE_TIME_SM_40MHz;
-		}
+		//Configuramos el registro que se encarga de generar la señal de reloj
+		ptrHandlerI2C->ptrI2Cx->CCR |= (ptrHandlerI2C->I2C_SPEED << I2C_CCR_CCR_Pos);
+		//Configuramos el registro que controla el tiempo T-Rise maximo
+		ptrHandlerI2C->ptrI2Cx->TRISE |= ptrHandlerI2C->I2C_RISE;
+
 
 	}
 	else{
 		//Estamos en mo "Fast" (FM Mode)
 		//Seleccionamos el modo Fast
 		ptrHandlerI2C->ptrI2Cx->CCR |= I2C_CCR_FS;
-		if(ptrHandlerI2C->PLL_ON == PLL_DISABLE){
-			//Configuramos el registro que se encarga de generar la señal del reloj
-			ptrHandlerI2C->ptrI2Cx->CCR |= (I2C_MODE_FM_SPEED_400KHz << I2C_CCR_CCR_Pos);
-			//Configuramos el registro que controla el tiempo T-Rise maximo
-			ptrHandlerI2C->ptrI2Cx->TRISE |= I2C_MAX_RISE_TIME_FM;
-		}else if(ptrHandlerI2C->PLL_ON == PLL_ENABLE){
-			//Configuramos el registro que se encarga de generar la señal del reloj
-			ptrHandlerI2C->ptrI2Cx->CCR |= (I2C_MODE_FM_SPEED_400KHz_CLOCK_40MHz << I2C_CCR_CCR_Pos);
-			//Configuramos el registro que controla el tiempo T-Rise maximo
-			ptrHandlerI2C->ptrI2Cx->TRISE |= I2C_MAX_RISE_TIME_FM_40MHz;
-		}
-
+		//Configuramos el registro que se encarga de generar la señal de reloj
+		ptrHandlerI2C->ptrI2Cx->CCR |= (ptrHandlerI2C->I2C_SPEED << I2C_CCR_CCR_Pos);
+		//Configuramos el registro que controla el tiempo T-Rise maximo
+		ptrHandlerI2C->ptrI2Cx->TRISE |= ptrHandlerI2C->I2C_RISE;
 	}
 
 	//5. Activamos el modulo I2C
@@ -221,4 +204,3 @@ void i2c_writeSingleRegister(I2C_Handler_t *ptrHandlerI2C, uint8_t regToRead, ui
 	//5. Generamos la condicion Stop, para que el slave se detenga despues de 1 byte
 	i2c_stopTransaction(ptrHandlerI2C);
 }
-

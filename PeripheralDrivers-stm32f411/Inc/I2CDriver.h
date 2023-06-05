@@ -40,7 +40,9 @@ typedef struct
 	uint8_t			slaveAddress;
 	uint8_t			modeI2C;
 	uint8_t			dataI2C;
-	uint8_t			PLL_ON;
+	uint16_t		I2C_SPEED;
+	uint8_t 		I2C_RISE;
+	uint8_t 		I2C_MAIN_CLOCK;
 }I2C_Handler_t;
 
 /*Prototipos de las funciones publicas*/
@@ -57,6 +59,5 @@ void i2c_sendNoAck(I2C_Handler_t *ptrHandlerI2C);
 
 uint8_t i2c_readSingleRegister(I2C_Handler_t *ptrHandlerI2C, uint8_t regToRead);
 void i2c_writeSingleRegister(I2C_Handler_t *ptrHandlerI2C, uint8_t regToRead, uint8_t newValue);
-
 
 #endif /* I2CDRIVER_H_ */
