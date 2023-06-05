@@ -44,6 +44,7 @@ USART_Handler_t handlerTerminal = {0};
 GPIO_Handler_t SDAAccel = {0};
 GPIO_Handler_t SCLAccel = {0};
 I2C_Handler_t handlerAccelerometer = {0};
+uint8_t i2cBuffer = 0;
 
 /*==========================
  *Configuracion del MCO1
@@ -64,13 +65,26 @@ uint8_t bufferReception[] = {0};
 bool stringComplete = false;
 unsigned int firstParameter;
 unsigned int secondParameter;
+char bufferData[24] = "accel MPU-6050 testing..";
 
 int main(void){
 	//Cargamos la configuracion de los pines
 	initSystem();
 
 	while(1){
+		if(rxData != '\0'){
+					writeChar(&handlerTerminal, rxData);
 
+					if(rxData == 'w'){
+						sprintf(bufferData, "WHO_AM_I? (r)\n");
+						writeMsg(&handlerTerminal, bufferData);
+
+						i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
+						sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
+						writeMsg(&handlerTerminal, bufferData);
+						rxData = '\0';
+					}
+		}
 	}
 }
 
@@ -105,27 +119,27 @@ void initSystem(void){
 	 * Configuracion de la comunicacion serial
 	 *========================================*/
 	//Configuracion para el pin de transmicion
-	handlerPinTX.pGPIOx 										= GPIOC;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinNumber					= PIN_6;
+	handlerPinTX.pGPIOx 										= GPIOA;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinNumber					= PIN_2;
 	handlerPinTX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
 	handlerPinTX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
 	handlerPinTX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
 	handlerPinTX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF8;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
 	//Cargar la configuracion del pin
 	GPIO_Config(&handlerPinTX);
 	//configuracion del pin para la recepcion
-	handlerPinRX.pGPIOx											= GPIOC;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinNumber					= PIN_7;
+	handlerPinRX.pGPIOx											= GPIOA;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinNumber					= PIN_3;
 	handlerPinRX.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
 	handlerPinRX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
 	handlerPinRX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
 	handlerPinRX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF8;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
 	//Cargar la configuracion del pin
 	GPIO_Config(&handlerPinRX);
 	//Configuracion del USART
-	handlerTerminal.ptrUSARTx 									= USART6;
+	handlerTerminal.ptrUSARTx 									= USART2;
 	handlerTerminal.USART_Config.USART_baudrate 				= USART_BAUDRATE_115200;
 	handlerTerminal.USART_Config.USART_datasize					= USART_DATASIZE_8BIT;
 	handlerTerminal.USART_Config.USART_parity					= USART_PARITY_NONE;
@@ -161,6 +175,9 @@ void initSystem(void){
 	handlerAccelerometer.ptrI2Cx								= I2C1;
 	handlerAccelerometer.modeI2C								= I2C_MODE_FM;
 	handlerAccelerometer.slaveAddress							= ACCEL_ADDRESS;
+	handlerAccelerometer.I2C_RISE								= I2C_MAX_RISE_TIME_FM;
+	handlerAccelerometer.I2C_SPEED								= I2C_MODE_FM_SPEED_400KHz;
+	handlerAccelerometer.I2C_MAIN_CLOCK							= MAIN_CLOCK_16_MHz_FOR_I2C;
 	i2c_Config(&handlerAccelerometer);
 
 	/*=========================================================
