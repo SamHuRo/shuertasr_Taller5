@@ -15,7 +15,7 @@ char auxArreglo[100];
 uint32_t contador = 0;
 volatile uint16_t tx_index = 0;
 volatile uint16_t tx_length = 0;
-uint16_t freqMCU = 0;
+uint16_t freqMCUUsart = 0;
 
 /**
  * Configurando el puerto Serial...
@@ -145,8 +145,8 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Valor a cargar 0x208D
 			// Configurando el Baudrate generator para una velocidad de 9600bps
 			//ptrUsartHandler->ptrUSARTx->BRR = 0x208D;
-			freqMCU = getConfigPLL();
-			ptrUsartHandler->ptrUSARTx->BRR = (freqMCU * 1000000 / (16 * 9600)) * 16;
+			freqMCUUsart = getConfigPLL();
+			ptrUsartHandler->ptrUSARTx->BRR = (freqMCUUsart * 1000000 / (16 * 9600)) * 16;
 		}
 
 	}
@@ -164,8 +164,8 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Valor a cargar 0x1046
 			// Configurando el Baudrate generator para una velocidad de 19200bps
 			//ptrUsartHandler->ptrUSARTx->BRR = 0x1046;
-			freqMCU = getConfigPLL();
-			ptrUsartHandler->ptrUSARTx->BRR = (freqMCU * 1000000 / (16 * 19200)) * 16;
+			freqMCUUsart = getConfigPLL();
+			ptrUsartHandler->ptrUSARTx->BRR = (freqMCUUsart * 1000000 / (16 * 19200)) * 16;
 		}
 
 	}
@@ -184,8 +184,8 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Valor a cargar 0x02B6
 			// Configurando el Baudrate generator para una velocidad de 115200bps
 			//ptrUsartHandler->ptrUSARTx->BRR = 0x02B6;
-			freqMCU = getConfigPLL();
-			ptrUsartHandler->ptrUSARTx->BRR = (freqMCU * 1000000 / (16 * 115200)) * 16;
+			freqMCUUsart = getConfigPLL();
+			ptrUsartHandler->ptrUSARTx->BRR = (freqMCUUsart * 1000000 / (16 * 115200)) * 16;
 
 		}
 	}

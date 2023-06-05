@@ -45,6 +45,11 @@ GPIO_Handler_t SDAAccel = {0};
 GPIO_Handler_t SCLAccel = {0};
 I2C_Handler_t handlerAccelerometer = {0};
 
+/*==========================
+ *Configuracion del MCO1
+ *==========================*/
+GPIO_Handler_t Mco1Pin = {0};
+
 /*=========================
  * Cabeceras de las funciones
  * ==========================*/
@@ -157,6 +162,20 @@ void initSystem(void){
 	handlerAccelerometer.modeI2C								= I2C_MODE_FM;
 	handlerAccelerometer.slaveAddress							= ACCEL_ADDRESS;
 	i2c_Config(&handlerAccelerometer);
+
+	/*=========================================================
+	 * Configuracion del pin para el MCO1
+	 *==========================================================*/
+	Mco1Pin.pGPIOx												= GPIOA;
+	Mco1Pin.GPIO_PinConfig.GPIO_PinNumber						= PIN_8;
+	Mco1Pin.GPIO_PinConfig.GPIO_PinMode							= GPIO_MODE_ALTFN;
+	Mco1Pin.GPIO_PinConfig.GPIO_PinOPType						= GPIO_OTYPER_OPENDRAIN;
+	Mco1Pin.GPIO_PinConfig.GPIO_PinPuPdControl					= GPIO_PUPDR_NOTHING;
+	Mco1Pin.GPIO_PinConfig.GPIO_PinSpeed						= GPIO_OSPEED_FAST;
+	Mco1Pin.GPIO_PinConfig.GPIO_PinAltFunMode					= AF0;
+	//Cargamos la configuracion
+	GPIO_Config(&Mco1Pin);
+
 }
 
 /*=======================================
