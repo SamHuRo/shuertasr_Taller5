@@ -55,7 +55,7 @@ void initSystem(void);
  * ==========================*/
 uint8_t rxData = 0;
 uint16_t contadorRecepcion = 0;
-uint8_t bufferReception[];
+uint8_t bufferReception[] = {0};
 bool stringComplete = false;
 unsigned int firstParameter;
 unsigned int secondParameter;
@@ -115,7 +115,7 @@ void initSystem(void){
 	//Cargar la configuracion del pin
 	GPIO_Config(&handlerPinRX);
 	//Configuracion del USART
-	handlerTerminal.ptrUSARTx 									= USART2;
+	handlerTerminal.ptrUSARTx 									= USART6;
 	handlerTerminal.USART_Config.USART_baudrate 				= USART_BAUDRATE_115200;
 	handlerTerminal.USART_Config.USART_datasize					= USART_DATASIZE_8BIT;
 	handlerTerminal.USART_Config.USART_parity					= USART_PARITY_NONE;
@@ -154,4 +154,18 @@ void initSystem(void){
 	handlerAccelerometer.slaveAddress							= ACCEL_ADDRESS;
 	handlerAccelerometer.PLL_ON									= PLL_ENABLE;
 	i2c_Config(&handlerAccelerometer);
+}
+
+/*=======================================
+ *   Funciones utilizadas en el Main
+ *=======================================*/
+
+
+/*=======================================
+ * Funciones Callback de los perifericos
+ *=======================================*/
+//Funcion callback del Timer
+void BasicTimer2_Callback(void){
+	//Se hace el blinky del pin
+	GPIO_TooglePin(&BlinkyPin);
 }
