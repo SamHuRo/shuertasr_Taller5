@@ -21,13 +21,17 @@
 #define PLL_MCO1PRE_4	2
 #define PLL_MCO1PRE_5	3
 
+#define PLL_DISABLE		0
+#define PLL_ENABLE		1
+
 //Definicion del PLL
 typedef struct
 {
-	uint8_t 	PLL_PLLM; //El valor que va a tomar el registro PLLM
-	uint16_t	PLL_PLLN; //El valor que va a tomar el registro PLLN
-	uint8_t		PLL_PLLP; //El valor que va a tomar el registro PLLP
-	uint8_t		PLL_MCO1PRE; //MCO1 prescaler
+	uint8_t 	PLL_PLLM; 		//El valor que va a tomar el registro PLLM
+	uint16_t	PLL_PLLN; 		//El valor que va a tomar el registro PLLN
+	uint8_t		PLL_PLLP; 		//El valor que va a tomar el registro PLLP
+	uint8_t		PLL_MCO1PRE; 	//MCO1 prescaler
+	uint8_t 	PLL_ON;			//Si el PLL se va a activar o no
 }PLL_Config_t;
 
 //Funcion para la configuracion del PLL

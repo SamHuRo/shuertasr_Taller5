@@ -185,7 +185,7 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 			// Configurando el Baudrate generator para una velocidad de 115200bps
 			//ptrUsartHandler->ptrUSARTx->BRR = 0x02B6;
 			freqMCUUsart = getConfigPLL();
-			ptrUsartHandler->ptrUSARTx->BRR = (freqMCUUsart * 1000000 / (16 * 115200)) * 16;
+			ptrUsartHandler->ptrUSARTx->BRR = ((freqMCUUsart * 1000000) / (16 * 115200)) * 16;
 
 		}
 	}

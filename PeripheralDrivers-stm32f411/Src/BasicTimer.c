@@ -37,10 +37,10 @@ void BasicTimer_Config(BasicTimer_Handler_t *ptrBTimerHandler){
 	/* 0. Desactivamos las interrupciones globales mientras configuramos el sistema.*/
 	__disable_irq();
 	/* 1. Activar la señal de reloj del periférico requerido */
-	if(ptrBTimerHandler->ptrTIMx == TIM2){
+	if(ptrBTimerHandler->ptrTIMx == TIM1){
 		// Registro del RCC que nos activa la señal de reloj para el TIM5
 		RCC->APB2ENR &= ~RCC_APB2ENR_TIM1EN;
-		RCC->APB1ENR |= RCC_APB2ENR_TIM1EN;
+		RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
 	}
 	else if(ptrBTimerHandler->ptrTIMx == TIM2){
 		// Registro del RCC que nos activa la señal de reloj para el TIM2

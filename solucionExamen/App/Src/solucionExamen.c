@@ -47,9 +47,14 @@ I2C_Handler_t handlerAccelerometer = {0};
 uint8_t i2cBuffer = 0;
 
 /*==========================
- *Configuracion del MCO1
+ * Configuracion del MCO1
  *==========================*/
 GPIO_Handler_t Mco1Pin = {0};
+
+/*==========================
+ * Configuracion del PLL
+ *==========================*/
+PLL_Config_t handlerPLL = {0}; //Se va a guardar la configuracion del PLL
 
 /*=========================
  * Cabeceras de las funciones
@@ -94,6 +99,17 @@ int main(void){
  * Funcion para cargar la configuracion de los pines
  * ================================================*/
 void initSystem(void){
+	/*=======================
+	 * Configuracion del PLL
+	 *=======================*/
+//	handlerPLL.PLL_PLLM											= 10;
+//	handlerPLL.PLL_PLLN											= 100;
+//	handlerPLL.PLL_PLLP											= PLLP_2;
+//	handlerPLL.PLL_MCO1PRE										= PLL_MCO1PRE_4;
+	handlerPLL.PLL_ON											= PLL_DISABLE;
+	//Cargar la configuracion del PLL
+	ConfigPLL(&handlerPLL);
+
 	/*========================================
 	 * Configuracion del Blinky Pin
 	 *========================================*/
@@ -147,6 +163,7 @@ void initSystem(void){
 	handlerTerminal.USART_Config.USART_mode						= USART_MODE_RXTX;
 	handlerTerminal.USART_Config.USART_enableIntRX				= USART_RX_INTERRUP_ENABLE;
 	handlerTerminal.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_ENABLE;
+	handlerTerminal.USART_Config.USART_PLL_Enable				= 0;
 	//Cargar la configuracion del USART
 	USART_Config(&handlerTerminal);
 
@@ -180,9 +197,9 @@ void initSystem(void){
 	handlerAccelerometer.I2C_MAIN_CLOCK							= MAIN_CLOCK_16_MHz_FOR_I2C;
 	i2c_Config(&handlerAccelerometer);
 
-	/*=========================================================
+	/*=====================================
 	 * Configuracion del pin para el MCO1
-	 *==========================================================*/
+	 *====================================*/
 	Mco1Pin.pGPIOx												= GPIOA;
 	Mco1Pin.GPIO_PinConfig.GPIO_PinNumber						= PIN_8;
 	Mco1Pin.GPIO_PinConfig.GPIO_PinMode							= GPIO_MODE_ALTFN;
@@ -193,6 +210,9 @@ void initSystem(void){
 	//Cargamos la configuracion
 	GPIO_Config(&Mco1Pin);
 
+	/*=====================================
+	 * 	   Configuracion para el ADC
+	 *====================================*/
 }
 
 /*=======================================
@@ -207,4 +227,9 @@ void initSystem(void){
 void BasicTimer2_Callback(void){
 	//Se hace el blinky del pin
 	GPIO_TooglePin(&BlinkyPin);
+}
+/*Funcion callback del usart*/
+void usart2Rx_Callback(void){
+	//Almacenamos el dato que se envio  en la variable rxData
+	rxData = getRxData();
 }
