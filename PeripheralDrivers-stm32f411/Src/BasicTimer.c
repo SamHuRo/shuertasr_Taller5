@@ -4,8 +4,10 @@
  *  Created on: May 12, 2023
  *      Author: samuel
  */
-
 #include "BasicTimer.h"
+#include "PLLDriver.h"
+
+uint16_t freqMCU = 0;
 
 /* Variable que guarda la referencia del periférico que se esta utilizando*/
 TIM_TypeDef	*ptrTimerUsed;
@@ -84,7 +86,8 @@ void BasicTimer_Config(BasicTimer_Handler_t *ptrBTimerHandler){
 	 * periodo_incremento * veces_incremento_counter = periodo_update
 	 * Modificar el valor del registro PSC en el TIM utilizado
 	 */
-	ptrBTimerHandler->ptrTIMx->PSC = ptrBTimerHandler->TIMx_Config.TIMx_speed;
+	freqMCU = getConfigPLL();
+	ptrBTimerHandler->ptrTIMx->PSC = freqMCU * ptrBTimerHandler->TIMx_Config.TIMx_speed;
 
 	/* 3. Configuramos la dirección del counter (up/down)*/
 	if(ptrBTimerHandler->TIMx_Config.TIMx_mode == BTIMER_MODE_UP){
@@ -267,3 +270,4 @@ void TIM11_IRQHandler(void){
 	BasicTimer11_Callback();
 
 }
+
