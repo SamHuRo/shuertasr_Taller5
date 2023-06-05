@@ -61,7 +61,12 @@ unsigned int firstParameter;
 unsigned int secondParameter;
 
 int main(void){
+	//Cargamos la configuracion de los pines
+	initSystem();
 
+	while(1){
+
+	}
 }
 
 
@@ -86,7 +91,7 @@ void initSystem(void){
 	//Configuracion con la cual se maneja el timer
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_mode					= BTIMER_MODE_UP;
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_period				= 2500;
-	handlerTimerBlinkyPin.TIMx_Config.TIMx_speed				= BTIMER_SPEED_100us_80MHz;
+	handlerTimerBlinkyPin.TIMx_Config.TIMx_speed				= BTIMER_SPEED_100us;
 	handlerTimerBlinkyPin.TIMx_Config.TIMx_interruptEnable		= SET;
 	//Cargar la configuracion del Timer
 	BasicTimer_Config(&handlerTimerBlinkyPin);
@@ -123,7 +128,6 @@ void initSystem(void){
 	handlerTerminal.USART_Config.USART_mode						= USART_MODE_RXTX;
 	handlerTerminal.USART_Config.USART_enableIntRX				= USART_RX_INTERRUP_ENABLE;
 	handlerTerminal.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_ENABLE;
-	handlerTerminal.USART_Config.USART_PLL_Enable				= PLL_ENABLE;
 	//Cargar la configuracion del USART
 	USART_Config(&handlerTerminal);
 
@@ -152,7 +156,6 @@ void initSystem(void){
 	handlerAccelerometer.ptrI2Cx								= I2C1;
 	handlerAccelerometer.modeI2C								= I2C_MODE_FM;
 	handlerAccelerometer.slaveAddress							= ACCEL_ADDRESS;
-	handlerAccelerometer.PLL_ON									= PLL_ENABLE;
 	i2c_Config(&handlerAccelerometer);
 }
 
