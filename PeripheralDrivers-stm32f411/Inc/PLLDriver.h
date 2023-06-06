@@ -21,6 +21,18 @@
 #define PLL_MCO1PRE_4	2
 #define PLL_MCO1PRE_5	3
 
+#define PRESC_APB1_2	0
+#define PRESC_APB1_4	1
+#define PRESC_APB1_8	2
+#define PRESC_APB1_16	3
+#define PRESC_APB1_NONE	4
+
+#define PRESC_APB2_2	0
+#define PRESC_APB2_4	1
+#define PRESC_APB2_8	2
+#define PRESC_APB2_16	3
+#define PRESC_APB2_NONE	4
+
 #define PLL_DISABLE		0
 #define PLL_ENABLE		1
 
@@ -32,6 +44,8 @@ typedef struct
 	uint8_t		PLL_PLLP; 		//El valor que va a tomar el registro PLLP
 	uint8_t		PLL_MCO1PRE; 	//MCO1 prescaler
 	uint8_t 	PLL_ON;			//Si el PLL se va a activar o no
+	uint8_t 	APB1_PRESC;		//El prescaler que va a tener el APB1
+	uint8_t 	APB2_PRESC;		//El prescaler que va a tener el APB2
 }PLL_Config_t;
 
 //Funcion para la configuracion del PLL
