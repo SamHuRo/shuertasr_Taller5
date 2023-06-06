@@ -61,7 +61,7 @@ void startSingleADC(void);
 void startContinousADC(void);
 uint16_t getADC(void);
 
-//void ADC_ConfigMultichannel (ADC_Config_t *adcConfig, uint8_t numeroDeCanales);
+void ADC_ConfigMultichannel (ADC_Config_t *adcConfig, uint8_t numeroDeCanales);
 
 
 #endif /* ADCDRIVER_H_ */

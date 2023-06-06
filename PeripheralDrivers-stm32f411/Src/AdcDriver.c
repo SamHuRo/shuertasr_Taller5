@@ -333,4 +333,6 @@ void configAnalogPin(uint8_t adcChannel) {
 	GPIO_Config(&handlerAdcPin);
 }
 
+void ADC_ConfigMultichannel (ADC_Config_t *adcConfig, uint8_t numeroDeCanales){
 
+}
