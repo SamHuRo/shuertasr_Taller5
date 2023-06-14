@@ -49,28 +49,11 @@ int main(void)
     /* Loop forever */
 	while(1){
 
-		//Primer ejemplo del usart
-//		if(sendMsg > 4){
-//			writeChar(&usart2Comm, 'H');
-//			writeChar(&usart2Comm, 'O');
-//			writeChar(&usart2Comm, 'L');
-//			writeChar(&usart2Comm, 'A');
-//			writeChar(&usart2Comm, ' ');
-//			writeChar(&usart2Comm, 'M');
-//			writeChar(&usart2Comm, 'U');
-//			writeChar(&usart2Comm, 'N');
-//			writeChar(&usart2Comm, 'D');
-//			writeChar(&usart2Comm, 'O');
-//			sendMsg = 0;
-//		}
-
 		//Segunda prueba con el usart, enviando un mensaje
 		if(sendMsg > 10){
 			writeMsg(&usart2Comm, mensaje);
 			sendMsg = 0;
 		}
-
-
 		/*Se va a actuvar cuando se detecte la interrupcion, ya que una interrupcion no se puede demorar mas de 1ms, poniendo esta opcion en el main,
 		 * el tiempo de la interrupcion se demora 5 micro-segundos*/
 		if(usart2DataReceived != '\0'){
