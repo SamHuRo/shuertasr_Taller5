@@ -208,6 +208,8 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 		ptrUsartHandler->ptrUSARTx->CR1 &= ~USART_CR1_RXNEIE;
 		/*Activamos la interrupcion del USART que se esta utilizando*/
 		ptrUsartHandler->ptrUSARTx->CR1 |= USART_CR1_RXNEIE;
+		//Modificamos el bit DMAR para habilitar la recepcion
+		ptrUsartHandler->ptrUSARTx->CR3 |= USART_CR3_DMAR;
 
 		/*Matriculamos la interrupcion en el NVIC*/
 		if(ptrUsartHandler->ptrUSARTx == USART1){

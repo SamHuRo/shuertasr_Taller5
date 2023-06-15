@@ -50,10 +50,10 @@ int main(void)
 	while(1){
 
 		//Segunda prueba con el usart, enviando un mensaje
-		if(sendMsg > 10){
-			writeMsg(&usart2Comm, mensaje);
-			sendMsg = 0;
-		}
+//		if(sendMsg > 10){
+//			writeMsg(&usart2Comm, mensaje);
+//			sendMsg = 0;
+//		}
 		/*Se va a actuvar cuando se detecte la interrupcion, ya que una interrupcion no se puede demorar mas de 1ms, poniendo esta opcion en el main,
 		 * el tiempo de la interrupcion se demora 5 micro-segundos*/
 		if(usart2DataReceived != '\0'){
@@ -103,8 +103,8 @@ void initSystem(void){
 	//configuracion del pin para la recepcion
 	handlerPinRX.pGPIOx									= GPIOA;
 	handlerPinRX.GPIO_PinConfig.GPIO_PinNumber			= PIN_3;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinMode			= GPIO_MODE_AF;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPER_PUSHPULL;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinMode			= GPIO_MODE_IN;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinPuPdControl		= GPIO_PUPDR_PULLUP;
 	//Cargar la configuracion del pin
 	GPIO_Config(&handlerPinRX);
 
