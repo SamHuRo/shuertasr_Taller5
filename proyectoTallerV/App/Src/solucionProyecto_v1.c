@@ -16,6 +16,8 @@
 #include "BasicTimer.h"
 #include "ExtiDriver.h"
 #include "GPIOxDriver.h"
+#include "I2CDriver.h"
+#include "MPUxDriver.h"
 #include "PLLDriver.h"
 #include "SysTickDriver.h"
 #include "USARTxDriver.h"
@@ -43,11 +45,29 @@ GPIO_Handler_t handlerPinRX = {0};
 //Handler para la configuracion USART
 USART_Handler_t handlerTerminal = {0};
 
+/*===================================
+ *     Handler del USART Bluetooth
+ *====================================*/
+//Pines para la comunicacion USART
+GPIO_Handler_t handlerPinTXHC_05 = {0};
+GPIO_Handler_t handlerPinRXHC_05 = {0};
+//Handler para la configuracion USART
+USART_Handler_t handlerTerminalHC_05 = {0};
+
 /*==========================
  *    Handler del PLL
  *==========================*/
 //Handler para la configuracion del PLL
 PLL_Config_t handlerPLL = {0};
+
+/*==========================
+ * Configuracion para el I2C
+ * ==========================*/
+//Acelerometro
+GPIO_Handler_t SDAAccel = {0};
+GPIO_Handler_t SCLAccel = {0};
+I2C_Handler_t handlerAccelerometer = {0};
+uint8_t i2cBuffer = 0;
 
 /*=========================
  * Cabeceras de las funciones
@@ -57,11 +77,18 @@ void initSystem(void);
 void parseCommands(char *prtBufferReception);
 //Funcion para obtener los comandos del usuario
 void cmdUsuario(void);
+//Funcion para obtener los comandos del modulo HC-05
+void cmdHC_05(void);
+//Funcion para inicializar el Acelerometro
+void initAccel(void);
+//Funcion al hundir una tecla por el usuario
+void tecladoAccel(void);
 
 /*=========================
  * 	 Variables Globales
  * ==========================*/
 uint8_t rxData = 0; //Esta variable se encarga de guardar el caracter que el usuario hunde en el teclado
+uint8_t rxDataHC_05 = 0;
 uint16_t contadorComando = 0; //Variable encargada de saber la posicion en la que se encuentra en el arreglo de bufferComando
 char bufferComando[BUFFER_SIZE] = {0}; //Arreglo para almacenar los comandos que el usuario introduce
 uint8_t stringComplete = 0;	//Bandera encargada de activarse cuando el usuario termina de introducir un comando
@@ -75,14 +102,19 @@ char userMsg[BUFFER_SIZE] = {0};
 char bufferData[BUFFER_SIZE + 24] = "Funcionando Prueba Proyecto...\n";
 
 int main(void){
+	/*Activar el co-prcesador matematico o unidad de punto flotante*/
+	SCB->CPACR |= (0xF << 20);
 	//Cargamos la configuracion de los pines
 	initSystem();
 	//Mensaje de que esta funcionando coreectamente el USART
 	writeMsg(&handlerTerminal, bufferData);
-
+	//Inicializacion del acelerometro
+	initAccel();
 	while(1){
 		//Captualos los comandos ingrasados por el usuario
-		cmdUsuario();
+//		cmdUsuario();
+		//Capturar la tecla que hunde el usuario
+		tecladoAccel();
 	}
 }
 
@@ -108,8 +140,8 @@ void initSystem(void){
 	/*========================================
 	 * Configuracion del Blinky Pin
 	 *========================================*/
-	BlinkyPin.pGPIOx											= GPIOA;
-	BlinkyPin.GPIO_PinConfig.GPIO_PinNumber						= PIN_5;
+	BlinkyPin.pGPIOx											= GPIOH;
+	BlinkyPin.GPIO_PinConfig.GPIO_PinNumber						= PIN_1;
 	BlinkyPin.GPIO_PinConfig.GPIO_PinMode						= GPIO_MODE_OUT;
 	BlinkyPin.GPIO_PinConfig.GPIO_PinOPType						= GPIO_OTYPER_PUSHPULL;
 	BlinkyPin.GPIO_PinConfig.GPIO_PinSpeed						= GPIO_OSPEED_HIGH;
@@ -129,6 +161,7 @@ void initSystem(void){
 	/*========================================
 	 * Configuracion de la comunicacion serial
 	 *========================================*/
+	/*---------------------- Configuracion USART2, comunicación terminal ----------------------*/
 	//Configuracion para el pin de transmicion
 	handlerPinTX.pGPIOx 										= GPIOA;
 	handlerPinTX.GPIO_PinConfig.GPIO_PinNumber					= PIN_2;
@@ -136,7 +169,7 @@ void initSystem(void){
 	handlerPinTX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
 	handlerPinTX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
 	handlerPinTX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF8;
+	handlerPinTX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
 	//Cargar la configuracion del pin
 	GPIO_Config(&handlerPinTX);
 	//configuracion del pin para la recepcion
@@ -146,7 +179,7 @@ void initSystem(void){
 	handlerPinRX.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
 	handlerPinRX.GPIO_PinConfig.GPIO_PinPuPdControl				= GPIO_PUPDR_NOTHING;
 	handlerPinRX.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
-	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF8;
+	handlerPinRX.GPIO_PinConfig.GPIO_PinAltFunMode				= AF7;
 	//Cargar la configuracion del pin
 	GPIO_Config(&handlerPinRX);
 	//Configuracion del USART
@@ -161,6 +194,66 @@ void initSystem(void){
 //	handlerTerminal.USART_Config.USART_PLL_Enable				= PLL_ENABLE;
 	//Cargar la configuracion del USART
 	USART_Config(&handlerTerminal);
+
+	/*---------------------- Configuracion HC-05, comunicación terminal ----------------------*/
+	//Configuracion para el pin de transmicion
+	handlerPinTXHC_05.pGPIOx 										= GPIOC;
+	handlerPinTXHC_05.GPIO_PinConfig.GPIO_PinNumber					= PIN_6;
+	handlerPinTXHC_05.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	handlerPinTXHC_05.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
+	handlerPinTXHC_05.GPIO_PinConfig.GPIO_PinPuPdControl			= GPIO_PUPDR_NOTHING;
+	handlerPinTXHC_05.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	handlerPinTXHC_05.GPIO_PinConfig.GPIO_PinAltFunMode				= AF8;
+	//Cargar la configuracion del pin
+	GPIO_Config(&handlerPinTXHC_05);
+	//configuracion del pin para la recepcion
+	handlerPinRXHC_05.pGPIOx										= GPIOC;
+	handlerPinRXHC_05.GPIO_PinConfig.GPIO_PinNumber					= PIN_7;
+	handlerPinRXHC_05.GPIO_PinConfig.GPIO_PinMode					= GPIO_MODE_ALTFN;
+	handlerPinRXHC_05.GPIO_PinConfig.GPIO_PinOPType					= GPIO_OTYPER_PUSHPULL;
+	handlerPinRXHC_05.GPIO_PinConfig.GPIO_PinPuPdControl			= GPIO_PUPDR_NOTHING;
+	handlerPinRXHC_05.GPIO_PinConfig.GPIO_PinSpeed					= GPIO_OSPEED_FAST;
+	handlerPinRXHC_05.GPIO_PinConfig.GPIO_PinAltFunMode				= AF8;
+	//Cargar la configuracion del pin
+	GPIO_Config(&handlerPinRXHC_05);
+	//Configuracion del USART
+	handlerTerminalHC_05.ptrUSARTx 									= USART6;
+	handlerTerminalHC_05.USART_Config.USART_baudrate 				= USART_BAUDRATE_115200;
+	handlerTerminalHC_05.USART_Config.USART_datasize				= USART_DATASIZE_8BIT;
+	handlerTerminalHC_05.USART_Config.USART_parity					= USART_PARITY_NONE;
+	handlerTerminalHC_05.USART_Config.USART_stopbits				= USART_STOPBIT_1;
+	handlerTerminalHC_05.USART_Config.USART_mode					= USART_MODE_RXTX;
+	handlerTerminalHC_05.USART_Config.USART_enableIntRX				= USART_RX_INTERRUP_ENABLE;
+	handlerTerminalHC_05.USART_Config.USART_enableIntTX				= USART_TX_INTERRUP_DISABLE;
+//	handlerTerminalHC_05.USART_Config.USART_PLL_Enable				= PLL_ENABLE;
+	//Cargar la configuracion del USART
+	USART_Config(&handlerTerminalHC_05);
+
+	/*--------------------- Configuracion para el protocolo I2C para el Acelerometro ------------------*/
+	//Configuracion de los pines para el I2C -> SCL
+	SCLAccel.pGPIOx												= GPIOB;
+	SCLAccel.GPIO_PinConfig.GPIO_PinNumber						= PIN_8;
+	SCLAccel.GPIO_PinConfig.GPIO_PinMode						= GPIO_MODE_ALTFN;
+	SCLAccel.GPIO_PinConfig.GPIO_PinOPType						= GPIO_OTYPER_OPENDRAIN;
+	SCLAccel.GPIO_PinConfig.GPIO_PinPuPdControl					= GPIO_PUPDR_NOTHING;
+	SCLAccel.GPIO_PinConfig.GPIO_PinSpeed						= GPIO_OSPEED_FAST;
+	SCLAccel.GPIO_PinConfig.GPIO_PinAltFunMode					= AF4;
+	GPIO_Config(&SCLAccel);
+	//Configuracion de los pines para el I2C -> SDA
+	SDAAccel.pGPIOx												= GPIOB;
+	SDAAccel.GPIO_PinConfig.GPIO_PinNumber						= PIN_9;
+	SDAAccel.GPIO_PinConfig.GPIO_PinMode						= GPIO_MODE_ALTFN;
+	SDAAccel.GPIO_PinConfig.GPIO_PinOPType						= GPIO_OTYPER_OPENDRAIN;
+	SDAAccel.GPIO_PinConfig.GPIO_PinPuPdControl					= GPIO_PUPDR_NOTHING;
+	SDAAccel.GPIO_PinConfig.GPIO_PinSpeed						= GPIO_OSPEED_FAST;
+	SDAAccel.GPIO_PinConfig.GPIO_PinAltFunMode					= AF4;
+	GPIO_Config(&SDAAccel);
+	//Configuracion de la cominicacion I2C
+	handlerAccelerometer.ptrI2Cx								= I2C1;
+	handlerAccelerometer.modeI2C								= I2C_MODE_FM;
+	handlerAccelerometer.slaveAddress							= ACCEL_ADDRESS;
+//	handlerAccelerometer.PLL_ON									= PLL_ENABLE;
+	i2c_Config(&handlerAccelerometer);
 }
 
 
@@ -178,34 +271,11 @@ void parseCommands(char *prtBufferReception){
 	 * 	De esta forma podemos introducir informacion al micro desde el puerto serial*/
 	sscanf(prtBufferReception, "%s %u %u %s %hd", cmd, &firstParameter, &secondParameter, userMsg, &thirdParameter);
 
-	//El primer comando imprime una lista de los comandos que existen
-	if(strcmp(cmd, "help") == 0){
-		writeMsg(&handlerTerminal, "Help Menu  CMDs\n");
-		writeMsg(&handlerTerminal, "1) dummy #A #B -- dummy cmd, #A and #B are uint32_t\n");
-		writeMsg(&handlerTerminal, "2) usermsg #msg -- usermsg cmd, #msg is a char(msg to show)\n");
+	sprintf(bufferData, "CMD %s\n", cmd);
+	writeMsg(&handlerTerminal, bufferData);
 
-	}
-	//El segundo comando imprime los numeros A y B que el usuario escribe
-	else if(strcmp(cmd, "dummy") == 0){
-		writeMsg(&handlerTerminal, "CMD: dummy\n");
+	writeMsg(&handlerTerminalHC_05, cmd);
 
-		sprintf(bufferData, "number A = %u\n", firstParameter);
-		writeMsg(&handlerTerminal, bufferData);
-
-		sprintf(bufferData, "number B = %u\n", secondParameter);
-		writeMsg(&handlerTerminal, bufferData);
-		unsigned int suma = 0;
-		suma = firstParameter + secondParameter;
-		sprintf(bufferData, "number C = %u\n", suma);
-		writeMsg(&handlerTerminal, bufferData);
-	}
-	//El tercer comando imprime el mensaje que el usuario escribe
-	else if(strcmp(cmd, "usermsg") == 0){
-		writeMsg(&handlerTerminal, "CMD: usermsg\n");
-
-		sprintf(bufferData, "User Msg = %s\n", userMsg);
-		writeMsg(&handlerTerminal, bufferData);
-	}
 	//Limpiamos los registros
 	firstParameter = 0;
 	secondParameter = 0;
@@ -239,6 +309,61 @@ void cmdUsuario(void){
 		stringComplete = 0;
 	}
 }
+/*Funcion que guarda las interacciones del acelerometro con el teclado*/
+void tecladoAccel(void){
+	if(rxData != '\0'){
+		if(rxData == 'a'){
+			uint8_t AccelX_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_L);
+			uint8_t AccelX_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_XOUT_H);
+			int16_t AccelX = AccelX_high << 8 | AccelX_low;
+			uint8_t AccelY_low = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_L);
+			uint8_t AccelY_high = i2c_readSingleRegister(&handlerAccelerometer, ACCEL_YOUT_H);
+			int16_t AccelY = AccelY_high << 8 | AccelY_low;
+			float ang_x = atan(AccelX/sqrt(pow(AccelX,2) + pow(AccelY,2)))*(180.0/3.14);
+			sprintf(bufferData, "AngX = %.2f \n", ang_x);
+			writeMsgTX(&handlerTerminal, bufferData);
+			rxData = '\0';
+		}
+		else{
+			rxData = '\0';
+		}
+	}
+}
+//Funcion para inicializar el acelerometro
+void initAccel(void){
+	sprintf(bufferData, "WHO_AM_I? (r)\n");
+	writeMsgTX(&handlerTerminal, bufferData);
+
+	i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, WHO_AM_I);
+	sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
+	writeMsgTX(&handlerTerminal, bufferData);
+
+	__NOP();
+	__NOP();
+	__NOP();
+	__NOP();
+	__NOP();
+	__NOP();
+
+	sprintf(bufferData, "PWR_MGMT_1 stat (r)\n");
+	writeMsgTX(&handlerTerminal, bufferData);
+
+	i2cBuffer = i2c_readSingleRegister(&handlerAccelerometer, PWR_MGMT_1);
+	sprintf(bufferData, "DataRead = 0x%x \n", (unsigned int) i2cBuffer);
+	writeMsgTX(&handlerTerminal, bufferData);
+
+	__NOP();
+	__NOP();
+	__NOP();
+	__NOP();
+	__NOP();
+	__NOP();
+
+	sprintf(bufferData, "PWR_MGMT_1 reset (w)\n");
+	writeMsgTX(&handlerTerminal, bufferData);
+
+	i2c_writeSingleRegister(&handlerAccelerometer, PWR_MGMT_1, 0x00);
+}
 
 /*=======================================
  * Funciones Callback de los perifericos
@@ -248,9 +373,13 @@ void BasicTimer5_Callback(void){
 	//Se hace el blinky del pin
 	GPIO_TooglePin(&BlinkyPin);
 }
-/*Funcion callback del usart*/
+/*Funcion callback del usart2*/
 void usart2Rx_Callback(void){
 	//Almacenamos el dato que se envio  en la variable rxData
 	rxData = getRxData();
 }
-
+/*Funcion callback del usart6*/
+void usart6Rx_Callback(void){
+	//Almacenamos el dato que se envio  en la variable rxData
+	rxDataHC_05 = getRxData();
+}
